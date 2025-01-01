@@ -1,0 +1,32 @@
+[package]
+name = "seck-fuzz"
+edition = "2024"
+publish = false
+version = "0.0.0"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+seck-reader = { path = "../crates/seck-reader" }
+seck-report = { path = "../crates/seck-report" }
+seck-proto = { path = "../crates/seck-proto" }
+
+[[bin]]
+name = "prompt_assembler"
+path = "fuzz_targets/prompt_assembler.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "report_sanitizer"
+path = "fuzz_targets/report_sanitizer.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "protocol_parser"
+path = "fuzz_targets/protocol_parser.rs"
+test = false
+doc = false
