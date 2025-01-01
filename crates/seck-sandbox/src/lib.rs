@@ -20,6 +20,9 @@ pub mod stub;
 #[cfg(not(any(target_os = "linux", target_os = "macos")))]
 pub use stub::LinuxSandbox;
 
+pub mod container;
+pub use container::ContainerSandbox;
+
 /// SHA3-256 hash of the profile files bundled into the binary for the
 /// current platform. Reported in `sandbox_attestation` so a third party
 /// can verify which profile version was active.
