@@ -1,0 +1,6 @@
+[package]
+name = "seck-host-unsafe"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false

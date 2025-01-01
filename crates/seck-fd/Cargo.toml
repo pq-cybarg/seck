@@ -1,0 +1,6 @@
+[package]
+name = "seck-fd"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
