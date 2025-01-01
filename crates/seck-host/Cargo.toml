@@ -12,12 +12,9 @@ workspace = true
 
 [dependencies]
 seck-taint = { path = "../seck-taint" }
-seck-fd = { path = "../seck-fd" }
-seck-host-unsafe = { path = "../seck-host-unsafe" }
 seck-plugin = { path = "../seck-plugin" }
 seck-proto = { path = "../seck-proto" }
 seck-sandbox = { path = "../seck-sandbox" }
-nix.workspace = true
 sha3.workspace = true
 thiserror.workspace = true
 anyhow.workspace = true
@@ -27,6 +24,19 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 rand.workspace = true
 hex.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+seck-fd = { path = "../seck-fd" }
+seck-host-unsafe = { path = "../seck-host-unsafe" }
+nix.workspace = true
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Threading",
+    "Win32_Security",
+] }
 
 [dev-dependencies]
 proptest.workspace = true

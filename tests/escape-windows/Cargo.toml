@@ -1,0 +1,28 @@
+[package]
+name = "seck-escape-windows"
+edition = "2024"
+publish = false
+version = "0.1.0"
+
+[lints.rust]
+unsafe_code = "allow"  # escape probes do raw Win32 things by design
+
+[dependencies]
+
+[target.'cfg(target_os = "windows")'.dependencies]
+seck-sandbox = { path = "../../crates/seck-sandbox" }
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Storage_FileSystem",
+    "Win32_Networking_WinSock",
+    "Win32_System_Threading",
+] }
+
+[[bin]]
+name = "escape_probe_windows"
+path = "src/escape_probe_windows.rs"
+test = false
+
+[[test]]
+name = "escape"
+path = "tests/escape.rs"
