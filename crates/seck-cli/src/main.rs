@@ -5,6 +5,9 @@ use clap::Parser;
 use std::os::fd::FromRawFd;
 use std::path::PathBuf;
 
+mod audit;
+mod models;
+
 #[derive(Parser)]
 #[command(name = "seck", version, about = "Sandboxed-LLM file/project analyzer")]
 struct Cli {
@@ -16,6 +19,10 @@ struct Cli {
 enum Cmd {
     /// Analyze a file or directory inside a sandboxed LLM pipeline.
     Analyze(AnalyzeArgs),
+    /// Manage the per-machine audit log (init / verify / tip).
+    Audit(audit::AuditArgs),
+    /// Manage model files (Plan 07 ships only `verify`).
+    Models(models::ModelsArgs),
 }
 
 #[derive(clap::Args)]
@@ -34,6 +41,12 @@ struct AnalyzeArgs {
     /// Output format.
     #[arg(long, default_value = "json")]
     output: String,
+    /// Airgap mode (default ON): refuse any backend that opens a socket.
+    #[arg(long, default_value_t = true)]
+    airgap: bool,
+    /// FIPS mode: constrain crypto to FIPS 203/204/205 parameter sets.
+    #[arg(long, default_value_t = false)]
+    fips: bool,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -41,16 +54,22 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match cli.cmd {
         Cmd::Analyze(a) => analyze(a),
+        Cmd::Audit(a) => audit::run(a),
+        Cmd::Models(a) => models::run(a),
     }
 }
 
 fn analyze(args: AnalyzeArgs) -> anyhow::Result<()> {
+    if args.fips {
+        seck_crypto::fips::enable_fips();
+    }
+    if args.airgap {
+        tracing::info!("--airgap on: network egress denied by sandbox");
+    }
+
     let entries = if let Some(raw_fd) = args.fd {
         // SAFETY: The CLI promises (and the macOS applet / Linux portal
-        // ensure) that this FD was inherited from the parent and points
-        // at a regular file opened with O_RDONLY|O_NOFOLLOW. We take
-        // ownership of it via OwnedFd::from_raw_fd; the kernel will not
-        // re-issue this FD to anyone else.
+        // ensure) that this FD was inherited from the parent.
         #[allow(unsafe_code)]
         let owned = unsafe { std::os::fd::OwnedFd::from_raw_fd(raw_fd) };
         let size = match std::fs::metadata(format!("/dev/fd/{raw_fd}")) {
@@ -88,6 +107,6 @@ fn analyze(args: AnalyzeArgs) -> anyhow::Result<()> {
         let report: seck_report::schema::Report = serde_json::from_value(v)?;
         print!("{}", seck_report::renderer::render_terminal(&report));
     }
-    let _ = args.sandbox_mode; // Plan 03+ adds more modes.
+    let _ = args.sandbox_mode;
     Ok(())
 }
