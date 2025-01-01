@@ -8,6 +8,3 @@ error[E0277]: the trait bound `Tainted<Vec<u8>>: AsRef<OsStr>` is not satisfied
   |
 note: required by a bound in `set_var`
  --> $RUST/std/src/env.rs
-  |
-  | pub unsafe fn set_var<K: AsRef<OsStr>, V: AsRef<OsStr>>(key: K, value: V) {
-  |                                           ^^^^^^^^^^^^ required by this bound in `set_var`
