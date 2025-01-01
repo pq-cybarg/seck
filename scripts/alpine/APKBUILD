@@ -1,0 +1,11 @@
+pkgname=seck
+pkgver=0.1.0
+pkgrel=0
+pkgdesc="Sandboxed-LLM file/project analyzer"
+url="https://github.com/seck-project/seck"
+arch="x86_64 aarch64"
+license="AGPL-3.0-or-later"
+makedepends="cargo libseccomp-dev"
+source="https://github.com/seck-project/seck/archive/refs/tags/v$pkgver.tar.gz"
+build() { cargo build --release --locked; }
+package() { install -Dm755 target/release/seck "$pkgdir"/usr/bin/seck; }

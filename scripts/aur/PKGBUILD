@@ -1,0 +1,13 @@
+pkgname=seck
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Sandboxed-LLM file/project analyzer"
+arch=('x86_64' 'aarch64')
+url="https://github.com/seck-project/seck"
+license=('AGPL-3.0-or-later')
+depends=('libseccomp')
+source=("https://github.com/seck-project/seck/releases/download/v$pkgver/seck-${CARCH}-unknown-linux-gnu")
+sha256sums=('REPLACE_AT_RELEASE')
+package() {
+  install -Dm755 "seck-${CARCH}-unknown-linux-gnu" "$pkgdir/usr/bin/seck"
+}
