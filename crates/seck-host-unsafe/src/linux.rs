@@ -22,8 +22,12 @@ struct OpenHow {
 
 const RESOLVE_NO_SYMLINKS: u64 = 0x04;
 const RESOLVE_NO_MAGICLINKS: u64 = 0x02;
-const RESOLVE_BENEATH: u64 = 0x08;
 const RESOLVE_NO_XDEV: u64 = 0x01;
+// NOTE: RESOLVE_BENEATH was intentionally dropped. It rejects any absolute
+// path because absolute paths "escape" AT_FDCWD. For seck the user's target
+// is explicit (they ran `seck analyze /etc/passwd`), so escape-from-anchor
+// is not the right defense. We keep RESOLVE_NO_SYMLINKS, which refuses ALL
+// symlinks in the path (any component) — that's the actual defense we want.
 
 // openat2 syscall numbers vary by arch. We pick the right one at compile time.
 #[cfg(target_arch = "x86_64")]
@@ -41,7 +45,6 @@ pub fn open_target(path: &Path) -> Result<OwnedFd, ResolveError> {
         mode: 0,
         resolve: RESOLVE_NO_SYMLINKS
             | RESOLVE_NO_MAGICLINKS
-            | RESOLVE_BENEATH
             | RESOLVE_NO_XDEV,
     };
     // SAFETY: openat2 is a syscall with a well-defined signature. We pass
