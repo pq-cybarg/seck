@@ -10,6 +10,9 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y libseccomp-dev build-essential cmake clang
       - run: cargo fmt --all -- --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
+      # Build debug bins first so integration tests (e.g. diff_modes)
+      # that fork-exec sibling binaries from target/debug/ find them.
+      - run: cargo build --workspace
       - run: cargo build --workspace --release
       - run: cargo test --workspace
       - name: trybuild compile-fail

@@ -22,6 +22,7 @@ pub enum VerifyError {
 ///     record);
 ///   * each record's `this_sha3_256` is SHA3-256 of the canonical body;
 ///   * each record's `ml_dsa_signature_hex` verifies under `pk`.
+///
 /// Returns the chain tip hash on success.
 pub fn verify_chain(path: &Path, pk: &[u8]) -> Result<String, VerifyError> {
     let content = std::fs::read_to_string(path)?;
@@ -43,8 +44,7 @@ pub fn verify_chain(path: &Path, pk: &[u8]) -> Result<String, VerifyError> {
         if computed != rec.this_sha3_256 {
             return Err(VerifyError::HashMismatch(i));
         }
-        let sig = hex::decode(&rec.ml_dsa_signature_hex)
-            .map_err(|_| VerifyError::BadSig(i))?;
+        let sig = hex::decode(&rec.ml_dsa_signature_hex).map_err(|_| VerifyError::BadSig(i))?;
         if !seck_crypto::sign::ml_dsa_verify(&pk.to_vec(), &body_bytes, &sig) {
             return Err(VerifyError::BadSig(i));
         }

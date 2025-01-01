@@ -48,7 +48,10 @@ pub fn read_frames(reader: &mut impl Read) -> Result<Vec<Frame>, ProtoError> {
         }
         let mut bytes = vec![0u8; bl as usize];
         reader.read_exact(&mut bytes)?;
-        out.push(Frame { relative_path, bytes });
+        out.push(Frame {
+            relative_path,
+            bytes,
+        });
     }
     reader.read_exact(&mut buf4)?;
     if &buf4 != MAGIC_TRAILER {

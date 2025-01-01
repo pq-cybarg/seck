@@ -130,10 +130,7 @@ fn render_meta(area: ratatui::layout::Rect, f: &mut Frame, r: &Report) {
         safe_line(&format!("sandbox: {}", r.invocation.sandbox_mode)),
         safe_line(&format!("backend: {}", r.invocation.backend)),
         safe_line(&format!("temp: {}", r.invocation.temperature)),
-        safe_line(&format!(
-            "deterministic: {}",
-            r.invocation.deterministic
-        )),
+        safe_line(&format!("deterministic: {}", r.invocation.deterministic)),
     ];
     Paragraph::new(Text::from(lines))
         .block(Block::default().borders(Borders::ALL).title("Pipeline"))

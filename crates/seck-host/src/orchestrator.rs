@@ -81,7 +81,9 @@ pub fn run_sandboxed(
     if !status.success() {
         return Err(OrchestratorError::ReaderFailed);
     }
-    Ok(OrchestratorResult { report_bytes: report })
+    Ok(OrchestratorResult {
+        report_bytes: report,
+    })
 }
 
 fn write_fileset_protocol(
@@ -238,5 +240,7 @@ pub fn run_sandboxed_mode_b(
     if !bytes_status.success() || !priv_status.success() {
         return Err(OrchestratorError::ReaderFailed);
     }
-    Ok(OrchestratorResult { report_bytes: report })
+    Ok(OrchestratorResult {
+        report_bytes: report,
+    })
 }

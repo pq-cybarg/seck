@@ -39,9 +39,7 @@ pub async fn serve(
         .with_state(state);
     let listener = tokio::net::TcpListener::bind(addr).await?;
     let actual = listener.local_addr()?;
-    eprintln!(
-        "seck web ready at http://{actual}/r/{initial} (loopback only, single-use)"
-    );
+    eprintln!("seck web ready at http://{actual}/r/{initial} (loopback only, single-use)");
     axum::serve(listener, app).await?;
     Ok(())
 }

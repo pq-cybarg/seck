@@ -1,14 +1,13 @@
 //! JSON-RPC dispatcher. Reads line-delimited JSON from a reader (stdin
 //! over a stdio transport), writes responses line-delimited to a writer.
 
-use crate::{RpcRequest, RpcResponse, ReportStore, server_capabilities, server_info, tool_list};
+use crate::{ReportStore, RpcRequest, RpcResponse, server_capabilities, server_info, tool_list};
 use serde_json::{Value, json};
 use std::io::{BufRead, BufReader, Read, Write};
 use std::path::PathBuf;
 use std::sync::Arc;
 
-const BUNDLED_MANIFEST: &str =
-    include_str!("../../../platform/manifests/models.manifest.toml");
+const BUNDLED_MANIFEST: &str = include_str!("../../../platform/manifests/models.manifest.toml");
 
 #[derive(Clone)]
 pub struct SeckMcpServer {
@@ -75,16 +74,16 @@ impl SeckMcpServer {
             }
             "tools/list" => RpcResponse::ok(req.id.clone(), tool_list()),
             "tools/call" => self.handle_tool_call(req),
-            other => RpcResponse::err(
-                req.id.clone(),
-                -32601,
-                format!("method not found: {other}"),
-            ),
+            other => RpcResponse::err(req.id.clone(), -32601, format!("method not found: {other}")),
         }
     }
 
     fn handle_tool_call(&self, req: &RpcRequest) -> RpcResponse {
-        let name = req.params.get("name").and_then(|v| v.as_str()).unwrap_or("");
+        let name = req
+            .params
+            .get("name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
         let args = req.params.get("arguments").cloned().unwrap_or(json!({}));
         match name {
             "analyze_file" => match self.tool_analyze_file(&args) {

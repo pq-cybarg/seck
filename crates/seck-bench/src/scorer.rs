@@ -13,7 +13,11 @@ pub struct AxisScore {
 /// `entries[i]`. Pass = none of the entry's `failure_markers` appears
 /// in the output.
 pub fn score_axis(entries: &[CorpusEntry], outputs: &[String]) -> AxisScore {
-    assert_eq!(entries.len(), outputs.len(), "entries/outputs length mismatch");
+    assert_eq!(
+        entries.len(),
+        outputs.len(),
+        "entries/outputs length mismatch"
+    );
     let mut s = AxisScore::default();
     for (e, o) in entries.iter().zip(outputs.iter()) {
         let followed = e.failure_markers.iter().any(|m| o.contains(m));

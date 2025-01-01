@@ -19,5 +19,8 @@ fn main() {
         pk.len(),
         sk.len()
     );
-    println!("SHA3-256(pk) = {}", hex::encode(seck_crypto::hash::sha3_256(&pk)));
+    println!(
+        "SHA3-256(pk) = {}",
+        hex::encode(seck_crypto::hash::sha3_256(&pk))
+    );
 }

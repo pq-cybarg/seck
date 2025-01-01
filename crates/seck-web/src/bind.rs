@@ -46,22 +46,37 @@ mod tests {
 
     #[test]
     fn refuses_0_0_0_0() {
-        assert!(matches!(resolve_bind("0.0.0.0:0"), Err(BindError::NotLoopback(_))));
+        assert!(matches!(
+            resolve_bind("0.0.0.0:0"),
+            Err(BindError::NotLoopback(_))
+        ));
     }
 
     #[test]
     fn refuses_ipv6_unspecified() {
-        assert!(matches!(resolve_bind("[::]:0"), Err(BindError::NotLoopback(_))));
+        assert!(matches!(
+            resolve_bind("[::]:0"),
+            Err(BindError::NotLoopback(_))
+        ));
     }
 
     #[test]
     fn refuses_lan() {
-        assert!(matches!(resolve_bind("192.168.1.1:0"), Err(BindError::NotLoopback(_))));
-        assert!(matches!(resolve_bind("10.0.0.1:0"), Err(BindError::NotLoopback(_))));
+        assert!(matches!(
+            resolve_bind("192.168.1.1:0"),
+            Err(BindError::NotLoopback(_))
+        ));
+        assert!(matches!(
+            resolve_bind("10.0.0.1:0"),
+            Err(BindError::NotLoopback(_))
+        ));
     }
 
     #[test]
     fn refuses_public() {
-        assert!(matches!(resolve_bind("8.8.8.8:0"), Err(BindError::NotLoopback(_))));
+        assert!(matches!(
+            resolve_bind("8.8.8.8:0"),
+            Err(BindError::NotLoopback(_))
+        ));
     }
 }

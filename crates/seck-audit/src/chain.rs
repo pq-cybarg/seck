@@ -47,11 +47,7 @@ impl Writer {
         &self.tip
     }
 
-    pub fn append(
-        &mut self,
-        event: &str,
-        fields: BTreeMap<String, String>,
-    ) -> std::io::Result<()> {
+    pub fn append(&mut self, event: &str, fields: BTreeMap<String, String>) -> std::io::Result<()> {
         let timestamp = chrono::Utc::now().to_rfc3339();
         let body = json!({
             "timestamp": &timestamp,

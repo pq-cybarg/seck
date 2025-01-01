@@ -43,9 +43,10 @@ impl LlmBackend for OllamaBackend {
     }
 
     fn generate(&mut self, prompt: &str) -> Result<String, BackendError> {
-        let cfg = self.cfg.as_ref().ok_or_else(|| {
-            BackendError::Generation("not loaded — call load() first".into())
-        })?;
+        let cfg = self
+            .cfg
+            .as_ref()
+            .ok_or_else(|| BackendError::Generation("not loaded — call load() first".into()))?;
         let model = cfg
             .model_path
             .file_stem()
@@ -61,8 +62,8 @@ impl LlmBackend for OllamaBackend {
                 "num_ctx": cfg.context_window,
             },
         });
-        let body_bytes = serde_json::to_vec(&body)
-            .map_err(|e| BackendError::Generation(e.to_string()))?;
+        let body_bytes =
+            serde_json::to_vec(&body).map_err(|e| BackendError::Generation(e.to_string()))?;
         let mut s = UnixStream::connect(&self.uds)
             .map_err(|e| BackendError::Generation(format!("connect {:?}: {e}", self.uds)))?;
         let req = format!(

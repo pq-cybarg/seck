@@ -52,11 +52,15 @@ fn parse_line(line: &str) -> Option<Effect> {
     if let Some(args) = body.strip_prefix("openat(") {
         // openat(AT_FDCWD, "<path>", flags) — path is the 1st quoted string
         let path = nth_quoted_string(args, 0)?;
-        return Some(Effect::OpenP { path: path.into_bytes() });
+        return Some(Effect::OpenP {
+            path: path.into_bytes(),
+        });
     }
     if let Some(args) = body.strip_prefix("openat2(") {
         let path = nth_quoted_string(args, 0)?;
-        return Some(Effect::OpenP { path: path.into_bytes() });
+        return Some(Effect::OpenP {
+            path: path.into_bytes(),
+        });
     }
     if let Some(args) = body.strip_prefix("execve(") {
         // execve("<path>", argv, envp)
@@ -153,14 +157,21 @@ mod tests {
         let line = r#"openat(AT_FDCWD, "/etc/hosts", O_RDONLY) = 3"#;
         assert_eq!(
             parse_line(line),
-            Some(Effect::OpenP { path: b"/etc/hosts".to_vec() })
+            Some(Effect::OpenP {
+                path: b"/etc/hosts".to_vec()
+            })
         );
     }
 
     #[test]
     fn strips_pid_prefix() {
         let line = r#"[pid 1234] openat(AT_FDCWD, "/x", O_RDONLY) = 3"#;
-        assert_eq!(parse_line(line), Some(Effect::OpenP { path: b"/x".to_vec() }));
+        assert_eq!(
+            parse_line(line),
+            Some(Effect::OpenP {
+                path: b"/x".to_vec()
+            })
+        );
     }
 
     #[test]
@@ -181,7 +192,10 @@ mod tests {
         let line = r#"write(3, "hello", 5) = 5"#;
         assert_eq!(
             parse_line(line),
-            Some(Effect::WriteF { fd: 3, bytes: b"hello".to_vec() })
+            Some(Effect::WriteF {
+                fd: 3,
+                bytes: b"hello".to_vec()
+            })
         );
     }
 
@@ -190,7 +204,10 @@ mod tests {
         let line = r#"connect(7, {sa_family=AF_INET, sin_addr=inet_addr("1.2.3.4"), sin_port=htons(80)}, 16) = 0"#;
         assert_eq!(
             parse_line(line),
-            Some(Effect::NetConn { host: "1.2.3.4".into(), port: 80 })
+            Some(Effect::NetConn {
+                host: "1.2.3.4".into(),
+                port: 80
+            })
         );
     }
 

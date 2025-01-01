@@ -11,6 +11,12 @@ pub struct MacosSandbox {
     profile_hash: [u8; 32],
 }
 
+impl Default for MacosSandbox {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl MacosSandbox {
     pub fn new() -> Self {
         Self {
@@ -67,9 +73,7 @@ impl MacosSandbox {
                 };
                 s
             };
-            return Err(anyhow::anyhow!(
-                "sandbox_init_with_parameters: {err}"
-            ));
+            return Err(anyhow::anyhow!("sandbox_init_with_parameters: {err}"));
         }
         Ok(())
     }

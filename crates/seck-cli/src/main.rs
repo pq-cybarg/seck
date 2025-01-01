@@ -78,7 +78,9 @@ fn is_wsl2() -> bool {
 }
 
 #[cfg(not(target_os = "linux"))]
-fn is_wsl2() -> bool { false }
+fn is_wsl2() -> bool {
+    false
+}
 
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
@@ -149,8 +151,8 @@ fn analyze(args: AnalyzeArgs) -> anyhow::Result<()> {
         }
         other => anyhow::bail!("unknown --sandbox-mode: {other} (expected 'a' or 'b')"),
     };
-    let v: serde_json::Value = serde_json::from_slice(&result.report_bytes)
-        .context("parsing report JSON")?;
+    let v: serde_json::Value =
+        serde_json::from_slice(&result.report_bytes).context("parsing report JSON")?;
     if args.output == "json" {
         println!("{}", serde_json::to_string_pretty(&v)?);
     } else {

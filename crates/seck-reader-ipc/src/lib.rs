@@ -98,10 +98,9 @@ mod tests {
         let back = read_messages(&mut cur).unwrap();
         assert_eq!(back.len(), 3);
         match (&msgs[0], &back[0]) {
-            (
-                Message::Header { nonce_hex: a, .. },
-                Message::Header { nonce_hex: b, .. },
-            ) => assert_eq!(a, b),
+            (Message::Header { nonce_hex: a, .. }, Message::Header { nonce_hex: b, .. }) => {
+                assert_eq!(a, b)
+            }
             _ => panic!("type mismatch"),
         }
     }

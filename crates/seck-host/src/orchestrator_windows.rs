@@ -17,15 +17,14 @@ use std::path::Path;
 use windows_sys::Win32::Foundation::{
     CloseHandle, GENERIC_READ, GetLastError, INVALID_HANDLE_VALUE,
 };
+use windows_sys::Win32::Security::SECURITY_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::{
     CreateFileW, FILE_FLAG_BACKUP_SEMANTICS, FILE_SHARE_READ, OPEN_EXISTING,
 };
-use windows_sys::Win32::Security::SECURITY_ATTRIBUTES;
 use windows_sys::Win32::System::Threading::{
-    CreateProcessW, DeleteProcThreadAttributeList,
-    EXTENDED_STARTUPINFO_PRESENT, InitializeProcThreadAttributeList,
-    PROC_THREAD_ATTRIBUTE_HANDLE_LIST, PROCESS_INFORMATION, STARTUPINFOEXW,
-    STARTUPINFOW, UpdateProcThreadAttribute,
+    CreateProcessW, DeleteProcThreadAttributeList, EXTENDED_STARTUPINFO_PRESENT,
+    InitializeProcThreadAttributeList, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, PROCESS_INFORMATION,
+    STARTUPINFOEXW, STARTUPINFOW, UpdateProcThreadAttribute,
 };
 
 pub struct WindowsOrchResult {
@@ -36,12 +35,13 @@ pub struct WindowsOrchResult {
 /// inheritable, then `CreateProcessW` the supplied `seck` binary with
 /// the HANDLE on its attribute list. The HANDLE number is passed via
 /// the `SECK_HANDLE` env var; the child uses `--handle=N` to consume it.
-pub fn run_sandboxed_windows(
-    path: &Path,
-    seck_exe: &Path,
-) -> anyhow::Result<WindowsOrchResult> {
+pub fn run_sandboxed_windows(path: &Path, seck_exe: &Path) -> anyhow::Result<WindowsOrchResult> {
     // 1. Open the input file inheritably.
-    let wide_path: Vec<u16> = path.as_os_str().encode_wide().chain(std::iter::once(0)).collect();
+    let wide_path: Vec<u16> = path
+        .as_os_str()
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
     let mut sa = SECURITY_ATTRIBUTES {
         nLength: core::mem::size_of::<SECURITY_ATTRIBUTES>() as u32,
         lpSecurityDescriptor: core::ptr::null_mut(),
@@ -70,24 +70,16 @@ pub fn run_sandboxed_windows(
     // SAFETY: documented: first call returns required size in attr_size
     // with ERROR_INSUFFICIENT_BUFFER.
     unsafe {
-        InitializeProcThreadAttributeList(
-            core::ptr::null_mut(),
-            1,
-            0,
-            &mut attr_size,
-        );
+        InitializeProcThreadAttributeList(core::ptr::null_mut(), 1, 0, &mut attr_size);
     }
     let mut attr_buf = vec![0u8; attr_size];
     let attr_list = attr_buf.as_mut_ptr() as *mut _;
-    let ok = unsafe {
-        InitializeProcThreadAttributeList(attr_list, 1, 0, &mut attr_size)
-    };
+    let ok = unsafe { InitializeProcThreadAttributeList(attr_list, 1, 0, &mut attr_size) };
     if ok == 0 {
         unsafe { CloseHandle(file_handle) };
-        anyhow::bail!(
-            "InitializeProcThreadAttributeList failed: {}",
-            unsafe { GetLastError() }
-        );
+        anyhow::bail!("InitializeProcThreadAttributeList failed: {}", unsafe {
+            GetLastError()
+        });
     }
     let handles = [file_handle];
     let ok = unsafe {
@@ -106,10 +98,9 @@ pub fn run_sandboxed_windows(
             DeleteProcThreadAttributeList(attr_list);
             CloseHandle(file_handle);
         }
-        anyhow::bail!(
-            "UpdateProcThreadAttribute failed: {}",
-            unsafe { GetLastError() }
-        );
+        anyhow::bail!("UpdateProcThreadAttribute failed: {}", unsafe {
+            GetLastError()
+        });
     }
 
     // 3. CreateProcessW. Pass the HANDLE numerically via `SECK_HANDLE`.

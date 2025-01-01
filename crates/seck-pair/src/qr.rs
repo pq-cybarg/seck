@@ -23,7 +23,9 @@ mod tests {
     #[test]
     fn renders_json_bundle() {
         // Just a smoke test: encode some bundle-shaped JSON.
-        let q = render(r#"{"host_public_hex":"aa..","psk_hex":"bb..","host_endpoint":"127.0.0.1:51820"}"#);
+        let q = render(
+            r#"{"host_public_hex":"aa..","psk_hex":"bb..","host_endpoint":"127.0.0.1:51820"}"#,
+        );
         assert!(q.lines().count() > 4);
     }
 }
