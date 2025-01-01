@@ -35,3 +35,6 @@ rand.workspace = true
 xdg = "2"
 rpassword = "7"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
+
+[dev-dependencies]
+tempfile = "3"

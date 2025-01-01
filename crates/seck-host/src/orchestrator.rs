@@ -132,3 +132,111 @@ fn read_to_end_from_fd<Tag>(
     }
     Ok(())
 }
+
+/// Approach B: two-process capability split.
+///
+/// - `reader_bytes_binary` (typically `seck-reader --mode=bytes-to-ipc`)
+///   sees the raw bytes from FD 3, base64-encodes them, and emits a
+///   line-delimited IPC stream on FD 7.
+/// - `reader_priv_binary` (the `seck-reader-priv` bin) consumes the IPC
+///   on its FD 3 and writes the report on FD 5. It has NO dependency on
+///   `seck-taint`; the type `Tainted<Vec<u8>>` is not even in scope, so
+///   it cannot be constructed there in principle.
+///
+/// CI gate `scripts/check-approach-b-invariant.sh` enforces the no-dep
+/// rule at the workspace level.
+///
+/// Pipe topology:
+///
+/// ```text
+///   host ──FileSet──▶ bytes(FD 3)
+///                      bytes(FD 7) ──IPC msgs──▶ priv(FD 3)
+///                                                  priv(FD 5) ──report──▶ host
+/// ```
+pub fn run_sandboxed_mode_b(
+    fileset: FileSet,
+    reader_bytes_binary: &std::path::Path,
+    reader_priv_binary: &std::path::Path,
+) -> Result<OrchestratorResult, OrchestratorError> {
+    use std::os::fd::AsRawFd;
+    use std::os::unix::process::CommandExt;
+
+    // Three pipes; the parent will write to (host_to_bytes_w) and read
+    // from (priv_to_host_r).
+    let (host_to_bytes_r, host_to_bytes_w) = nix::unistd::pipe()?;
+    let (bytes_to_priv_r, bytes_to_priv_w) = nix::unistd::pipe()?;
+    let (priv_to_host_r, priv_to_host_w) = nix::unistd::pipe()?;
+
+    // Raw fds for pre_exec closures (they must be Copy + 'static).
+    let h2b_r = host_to_bytes_r.as_raw_fd();
+    let b2p_r = bytes_to_priv_r.as_raw_fd();
+    let b2p_w = bytes_to_priv_w.as_raw_fd();
+    let p2h_w = priv_to_host_w.as_raw_fd();
+
+    // ---- spawn bytes (the bytes-to-ipc reader) ----
+    let mut bytes_cmd = std::process::Command::new(reader_bytes_binary);
+    bytes_cmd
+        .arg("--protocol-version=1")
+        .arg("--mode=bytes-to-ipc")
+        .env_clear()
+        .env("LANG", "C");
+    // SAFETY: pre_exec runs in the child after fork() and before execvp.
+    // dup2/close are async-signal-safe.
+    #[allow(unsafe_code)]
+    unsafe {
+        bytes_cmd.pre_exec(move || {
+            if libc::dup2(h2b_r, 3) < 0 {
+                return Err(std::io::Error::last_os_error());
+            }
+            if libc::dup2(b2p_w, 7) < 0 {
+                return Err(std::io::Error::last_os_error());
+            }
+            Ok(())
+        });
+    }
+    let mut bytes_child = bytes_cmd.spawn()?;
+
+    // ---- spawn priv (the inference orchestrator) ----
+    let mut priv_cmd = std::process::Command::new(reader_priv_binary);
+    priv_cmd.env_clear().env("LANG", "C");
+    if let Ok(model) = std::env::var("SECK_MODEL_PATH") {
+        priv_cmd.env("SECK_MODEL_PATH", model);
+    }
+    #[allow(unsafe_code)]
+    unsafe {
+        priv_cmd.pre_exec(move || {
+            if libc::dup2(b2p_r, 3) < 0 {
+                return Err(std::io::Error::last_os_error());
+            }
+            if libc::dup2(p2h_w, 5) < 0 {
+                return Err(std::io::Error::last_os_error());
+            }
+            Ok(())
+        });
+    }
+    let mut priv_child = priv_cmd.spawn()?;
+
+    // The parent must drop every fd that lives in a child, otherwise no
+    // EOF will ever propagate.
+    drop(host_to_bytes_r);
+    drop(bytes_to_priv_r);
+    drop(bytes_to_priv_w);
+    drop(priv_to_host_w);
+
+    // Host now owns: host_to_bytes_w (write) and priv_to_host_r (read).
+    let sandbox_stdin = SandboxFd::<Stdin>::from_owned(host_to_bytes_w);
+    let report_fd: HostPipeFd<()> = HostPipeFd::from_owned(priv_to_host_r);
+
+    write_fileset_protocol(&sandbox_stdin, fileset)?;
+    drop(sandbox_stdin);
+
+    let mut report = Vec::new();
+    read_to_end_from_fd(&report_fd, &mut report)?;
+
+    let bytes_status = bytes_child.wait()?;
+    let priv_status = priv_child.wait()?;
+    if !bytes_status.success() || !priv_status.success() {
+        return Err(OrchestratorError::ReaderFailed);
+    }
+    Ok(OrchestratorResult { report_bytes: report })
+}
