@@ -6,6 +6,14 @@ permissions:
   contents: write
   id-token: write
   attestations: write
+
+# Per-artifact knobs (strip, codegen-units, debug, opt-level) live in
+# [profile.release] in Cargo.toml — passing them via RUSTFLAGS makes
+# cargo apply them to library dep rlibs too, which under
+# `-C strip=symbols` corrupts rlibs and breaks downstream linkage with
+# E0463 inside reqwest etc. RUSTFLAGS here is reserved for LINK-time
+# flags only.
+
 jobs:
   release:
     runs-on: ubuntu-24.04
@@ -13,17 +21,30 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: sudo apt-get update && sudo apt-get install -y libseccomp-dev build-essential cmake clang
-      - run: SOURCE_DATE_EPOCH=1700000000 RUSTFLAGS="-C link-arg=-Wl,-z,relro,-z,now -C codegen-units=1 -C opt-level=3 -C debuginfo=0 -C strip=symbols -C relocation-model=pie" cargo build --release --workspace --locked
+
+      - name: Build release
+        run: SOURCE_DATE_EPOCH=1700000000 RUSTFLAGS="-C link-arg=-Wl,-z,relro,-z,now" cargo build --release --workspace --locked
+
       - name: Generate CycloneDX SBOM
         run: |
           cargo install --locked cargo-cyclonedx
           cargo cyclonedx --format json --override-filename release.sbom.json
+
+      - name: Per-crate license inventory
+        run: |
+          cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | "\(.license)\t\(.name)"' \
+            | sort > release.licenses.tsv
+          cat release.licenses.tsv
+
       - name: Bundle artifacts
         run: |
           mkdir -p release
           cp target/release/seck target/release/seck-reader target/release/seck-verify-release release/
-          cp release.sbom.json release/
+          cp release.sbom.json release.licenses.tsv release/
+          cp LICENSE-BSD-3-CLAUSE LICENSE-AGPL README.md release/
           (cd release && sha3sum * > SHA3SUMS)
+
       - name: Sign with SLH-DSA
         env: { SECK_RELEASE_SK_B64: "${{ secrets.SECK_RELEASE_SK_B64 }}" }
         run: |
@@ -32,7 +53,55 @@ jobs:
             ./target/release/seck-release-sign --key release/sk.bin --in "$f" --out "$f.slhdsa"
           done
           shred -u release/sk.bin || rm -f release/sk.bin
+
       - uses: actions/attest-build-provenance@v2
         with: { subject-path: 'release/*' }
+
+      - name: Compose release notes
+        id: notes
+        run: |
+          TAG="${GITHUB_REF##*/tags/}"
+          cat > release-notes.md <<EOF
+          ## seck $TAG
+
+          ### Verifying this release
+
+          \`\`\`sh
+          # 1. SHA3-256
+          sha3sum --check release/SHA3SUMS
+
+          # 2. SLH-DSA-SHAKE-128s (offline release key)
+          ./seck-verify-release --pubkey RELEASE_KEY.pub \\
+              --binary seck --sig seck.slhdsa
+          \`\`\`
+
+          The pinned SLH-DSA public-key fingerprint is documented at
+          \`docs/RELEASE_KEY.md\`. Transcribe it offline.
+
+          ### License
+
+          Mixed by design:
+
+          - **BSD-3-Clause** — 25 library crates (typestate, sandbox
+            backends, PQ crypto, hash-chained audit log, mobile pair,
+            host-net, trace-check, release tooling, MCP/Web/TUI/portal
+            frontends, etc.). See \`LICENSE-BSD-3-CLAUSE\`.
+          - **AGPL-3.0-or-later** — 4 user-facing application crates
+            (\`seck-cli\`, \`seck-reader\`, \`seck-reader-priv\`,
+            \`seck-pipeline\`). Hosting seck as a SaaS requires sharing
+            your changes. See \`LICENSE-AGPL\`.
+
+          Per-crate inventory is bundled as \`release.licenses.tsv\`.
+
+          ### Build provenance
+
+          - CycloneDX SBOM: \`release.sbom.json\`
+          - GitHub Actions attestation: see Sigstore log for this release
+          - Reproducibility: see \`.github/workflows/repro.yml\` (same-runner
+            bit-identity proven on every push)
+          EOF
+
       - uses: softprops/action-gh-release@v2
-        with: { files: 'release/*' }
+        with:
+          files: 'release/*'
+          body_path: release-notes.md
