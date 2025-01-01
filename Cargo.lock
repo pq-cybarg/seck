@@ -2702,6 +2702,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "tracing",
+ "windows-sys 0.59.0",
  "zeroize",
 ]
 
@@ -2896,6 +2897,7 @@ dependencies = [
  "seck-plugin",
  "sha3",
  "thiserror 2.0.18",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
