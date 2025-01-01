@@ -8,6 +8,7 @@ use std::path::PathBuf;
 mod audit;
 mod mcp;
 mod models;
+mod web;
 
 #[derive(Parser)]
 #[command(name = "seck", version, about = "Sandboxed-LLM file/project analyzer")]
@@ -26,6 +27,8 @@ enum Cmd {
     Models(models::ModelsArgs),
     /// Run the MCP server over stdio (Plan 12).
     Mcp(mcp::McpArgs),
+    /// Serve an HTML report locally (Plan 11).
+    Web(web::WebArgs),
 }
 
 #[derive(clap::Args)]
@@ -60,6 +63,7 @@ fn main() -> anyhow::Result<()> {
         Cmd::Audit(a) => audit::run(a),
         Cmd::Models(a) => models::run(a),
         Cmd::Mcp(a) => mcp::run(a),
+        Cmd::Web(a) => web::run(a),
     }
 }
 

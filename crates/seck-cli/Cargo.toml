@@ -22,6 +22,8 @@ seck-audit = { path = "../seck-audit" }
 seck-models = { path = "../seck-models" }
 seck-host-net = { path = "../seck-host-net" }
 seck-mcp = { path = "../seck-mcp" }
+seck-web = { path = "../seck-web" }
+tokio.workspace = true
 clap = { version = "4", features = ["derive", "env"] }
 anyhow.workspace = true
 tracing.workspace = true
