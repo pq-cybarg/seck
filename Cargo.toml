@@ -13,7 +13,7 @@ members = [
     "crates/seck-report",
     "crates/seck-cli",
 ]
-exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/integration"]
+exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/integration"]
 
 [workspace.package]
 edition = "2024"

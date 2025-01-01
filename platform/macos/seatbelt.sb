@@ -1,0 +1,54 @@
+;; Audited Seatbelt (SBPL) profile for seck-reader on macOS.
+;;
+;; Strategy: import Apple's `system.sb` (the same base every macOS-sandboxed
+;; process uses for dyld + libsystem) and then apply stricter denies on
+;; top. This trades off a small TCB extension (system.sb is auto-generated
+;; by Apple) for the ability to actually load a Mach-O binary. The strict
+;; denies below ensure network/file-write/IOKit/exec are all forbidden
+;; regardless of what system.sb permits.
+;;
+;; Parameters supplied by host via sandbox_init_with_parameters:
+;;   MODEL_DIR — directory containing the GGUF model file(s), read-only
+;;   INFER_BIN — the bundled llama.cpp inference binary, exec-only
+
+(version 1)
+
+;; Default: deny everything. system.sb's allows are additive.
+(deny default)
+
+;; Bring in Apple's base profile so dyld + libsystem can actually run.
+(import "system.sb")
+
+;; --- Layer strict denies on top of system.sb ---
+(deny file-write*)
+(deny network*)
+(deny iokit-open)
+(deny system-socket)
+(deny file-issue-extension)
+(deny mach-bootstrap)
+(deny sysctl-write)
+(deny process-fork)
+(deny process-exec*
+      (with no-log))
+
+;; --- Read-only access to the model directory ---
+(allow file-read-data file-read-metadata
+  (subpath (param "MODEL_DIR")))
+
+;; --- Allow the bundled inference binary to be exec'd (overrides the
+;; deny process-exec* above for this one literal path) ---
+(allow process-exec
+  (literal (param "INFER_BIN")))
+
+;; --- Allow specific sysctl-read needed by llama.cpp's CPU detection ---
+(allow sysctl-read
+  (sysctl-name "hw.ncpu")
+  (sysctl-name "hw.optional.arm.FEAT_FP16")
+  (sysctl-name "hw.optional.arm.FEAT_BF16")
+  (sysctl-name "hw.optional.AdvSIMD")
+  (sysctl-name "kern.osversion")
+  (sysctl-name "kern.osproductversion"))
+
+;; --- Allow signals + pidinfo on self only ---
+(allow signal (target self))
+(allow process-info-pidinfo (target self))

@@ -24,12 +24,11 @@ fn main() {
 }
 
 fn real_main() -> anyhow::Result<()> {
-    // 1. Apply sandbox lockdown immediately. On Linux this enables Landlock
-    // + PR_SET_NO_NEW_PRIVS + PR_SET_TSC. On macOS the stub returns an error
-    // (we still continue in degraded mode so the architecture can run and
-    // be inspected; Plan 02 swaps in real Seatbelt).
-    if let Err(e) = seck_sandbox::LinuxSandbox::apply_self_lockdown() {
-        eprintln!("seck-reader: sandbox unavailable on this platform ({e}); running unsandboxed (Plan 02 fills this in)");
+    // 1. Apply sandbox lockdown immediately. The platform-neutral helper
+    // routes to Linux Landlock+prctl on Linux, macOS Seatbelt on macOS,
+    // and a no-op stub elsewhere.
+    if let Err(e) = seck_sandbox::apply_self_lockdown() {
+        eprintln!("seck-reader: sandbox unavailable ({e}); running unsandboxed");
     }
 
     // 2. Read frames from FD 3.
