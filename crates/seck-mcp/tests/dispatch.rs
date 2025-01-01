@@ -49,11 +49,23 @@ fn verify_file_sha3_correct_hash_ok() {
     let f = tempfile::NamedTempFile::new().unwrap();
     std::fs::write(f.path(), b"hello").unwrap();
     let real = hex::encode(seck_crypto::hash::sha3_256(b"hello"));
-    let req = format!(
-        r#"{{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{{"name":"verify_file_sha3","arguments":{{"path":"{}","sha3_256_hex":"{}"}}}}}}"#,
-        f.path().display(),
-        real
-    );
+    // Build the request via serde_json::json! so Windows paths
+    // (which contain backslashes) are JSON-escaped correctly. A
+    // hand-rolled format! string leaves `\` un-escaped and produces
+    // invalid JSON that the server rejects before reaching the tool.
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "tools/call",
+        "params": {
+            "name": "verify_file_sha3",
+            "arguments": {
+                "path": f.path().to_string_lossy(),
+                "sha3_256_hex": real,
+            }
+        }
+    })
+    .to_string();
     let resp = s.dispatch(&req).expect("response");
     let body = serde_json::to_value(&resp).unwrap();
     let txt = body["result"]["content"][0]["text"].as_str().unwrap();
