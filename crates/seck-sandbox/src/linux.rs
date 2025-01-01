@@ -26,22 +26,28 @@ impl LinuxSandbox {
         nix::sys::prctl::set_no_new_privs()?;
 
         // 2. PR_SET_TSC=PR_TSC_SIGSEGV — block rdtsc/rdtscp side-channel.
-        // nix doesn't expose this; use raw prctl.
-        const PR_SET_TSC: i32 = 26;
-        const PR_TSC_SIGSEGV: i32 = 2;
-        // SAFETY: prctl with a well-known op + valid args. Result is
-        // checked below.
-        #[allow(unsafe_code)]
-        let rc: libc::c_int = unsafe { libc::prctl(PR_SET_TSC, PR_TSC_SIGSEGV, 0, 0, 0) };
-        if rc != 0 {
-            return Err(anyhow::anyhow!(
-                "prctl(PR_SET_TSC) failed: {}",
-                std::io::Error::last_os_error()
-            ));
+        // x86-only: aarch64 / RISC-V / other architectures don't expose a
+        // userspace cycle counter the same way, so this prctl is silently
+        // skipped on non-x86. See Plan 07 for the equivalent side-channel
+        // hardening per architecture.
+        #[cfg(target_arch = "x86_64")]
+        {
+            const PR_SET_TSC: i32 = 26;
+            const PR_TSC_SIGSEGV: i32 = 2;
+            // SAFETY: prctl with a well-known op + valid args. Result is
+            // checked below.
+            #[allow(unsafe_code)]
+            let rc: libc::c_int = unsafe { libc::prctl(PR_SET_TSC, PR_TSC_SIGSEGV, 0, 0, 0) };
+            if rc != 0 {
+                return Err(anyhow::anyhow!(
+                    "prctl(PR_SET_TSC) failed: {}",
+                    std::io::Error::last_os_error()
+                ));
+            }
         }
 
         // 3. Landlock: empty ruleset (full deny).
-        use landlock::{ABI, Ruleset, RulesetAttr, RulesetCreatedAttr, RulesetStatus};
+        use landlock::{ABI, Access, Ruleset, RulesetAttr, RulesetStatus};
         let status = Ruleset::default()
             .handle_access(landlock::AccessFs::from_all(ABI::V5))?
             .create()?
