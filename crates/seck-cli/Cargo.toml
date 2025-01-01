@@ -3,7 +3,8 @@ name = "seck-cli"
 edition.workspace = true
 rust-version.workspace = true
 version.workspace = true
-license.workspace = true
+# User-facing application binary — AGPL preserves SaaS-prevention.
+license = "AGPL-3.0-or-later"
 authors.workspace = true
 publish = false
 
