@@ -3,16 +3,10 @@
 //! Layered defenses, applied to the child by the orchestrator and to
 //! the running process by `apply_self_lockdown()`:
 //!
-//! 1. **AppContainer / LowBox.** A per-app SID with no broker access,
-//!    derived via `CreateAppContainerProfile` +
-//!    `DeriveAppContainerSidFromAppContainerName`.
-//! 2. **Restricted token.** `CreateRestrictedToken` with `DISABLE_MAX_PRIVILEGE`
-//!    drops every group SID's permissions to "deny only".
-//! 3. **Job Object.** `CreateJobObjectW` + `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`
-//!    so dropping the parent kills the sandboxed child.
-//! 4. **Process mitigation policies.** `SetProcessMitigationPolicy` for ACG
-//!    (no dynamic code), CIG (Microsoft-signed binaries only), DEP,
-//!    ASLR, EAF, Image-Load policy, and Extension-Point disable.
+//! - **AppContainer / LowBox** — a per-app SID with no broker access, derived via `CreateAppContainerProfile` + `DeriveAppContainerSidFromAppContainerName`.
+//! - **Restricted token** — `CreateRestrictedToken` with `DISABLE_MAX_PRIVILEGE` drops every group SID's permissions to "deny only".
+//! - **Job Object** — `CreateJobObjectW` + `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` so dropping the parent kills the sandboxed child.
+//! - **Process mitigation policies** — `SetProcessMitigationPolicy` for ACG (no dynamic code), CIG (Microsoft-signed binaries only), DEP, ASLR, EAF, Image-Load policy, and Extension-Point disable.
 //!
 //! NB: This module is `#![cfg(target_os = "windows")]`; it does not
 //! compile on Linux/macOS. The build is verified in CI on
