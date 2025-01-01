@@ -1,0 +1,7 @@
+/target
+**/target
+Cargo.lock.bak
+.DS_Store
+*.swp
+fuzz/corpus
+fuzz/artifacts

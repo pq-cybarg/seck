@@ -1,0 +1,53 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/seck-taint",
+    "crates/seck-fd",
+    "crates/seck-plugin",
+    "crates/seck-proto",
+    "crates/seck-sandbox",
+    "crates/seck-host-unsafe",
+    "crates/seck-host",
+    "crates/seck-reader",
+    "crates/seck-infer",
+    "crates/seck-report",
+    "crates/seck-cli",
+]
+exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/integration"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.85"
+version = "0.1.0"
+license = "AGPL-3.0-or-later"
+authors = ["Forrest Shooster <forrest.z.shooster@gmail.com>"]
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+unused_must_use = "deny"
+non_ascii_idents = "deny"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+
+[workspace.dependencies]
+nix = { version = "0.30", features = ["fs", "process", "user", "sched", "signal", "ioctl", "mman", "term", "socket"] }
+sha3 = "0.10"
+zeroize = { version = "1.8", features = ["zeroize_derive"] }
+subtle = "2.6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+jsonschema = "0.34"
+thiserror = "2"
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+rand = { version = "0.9", features = ["std_rng", "os_rng"] }
+hex = "0.4"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "io-util", "process", "fs", "net", "time"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+proptest = "1"
+trybuild = "1"
+assert_cmd = "2"
+predicates = "3"
+libc = "0.2"
