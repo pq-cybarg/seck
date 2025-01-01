@@ -1,0 +1,10 @@
+error[E0277]: `Tainted<Vec<u8>>` doesn't implement `Debug`
+ --> cases/tainted_into_format_debug.rs:5:29
+  |
+5 |     let _ = format!("{:?}", t);
+  |                      ----   ^ `Tainted<Vec<u8>>` cannot be formatted using `{:?}` because it doesn't implement `Debug`
+  |                      |
+  |                      required by this formatting parameter
+  |
+  = help: the trait `Debug` is not implemented for `Tainted<Vec<u8>>`
+  = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -1,0 +1,17 @@
+[package]
+name = "seck-compile-fail"
+edition = "2024"
+publish = false
+version = "0.0.0"
+
+[lints.rust]
+unsafe_code = "deny"
+
+[dev-dependencies]
+trybuild = "1"
+seck-taint = { path = "../../crates/seck-taint" }
+seck-fd = { path = "../../crates/seck-fd" }
+
+[[test]]
+name = "compile_fail"
+path = "tests/compile_fail.rs"
