@@ -362,7 +362,7 @@ package() {
 Source: seck
 Section: utils
 Priority: optional
-Maintainer: seck <forrest.z.shooster@gmail.com>
+Maintainer: pq-cybarg <resistant@tuta.com>
 Build-Depends: debhelper-compat (= 13), cargo, libseccomp-dev
 Standards-Version: 4.6.2
 
@@ -414,7 +414,7 @@ build_style=cargo
 hostmakedepends="cargo"
 makedepends="libseccomp-devel"
 short_desc="Sandboxed-LLM file/project analyzer"
-maintainer="seck <forrest.z.shooster@gmail.com>"
+maintainer="pq-cybarg <resistant@tuta.com>"
 license="AGPL-3.0-or-later"
 homepage="https://github.com/seck-project/seck"
 distfiles="https://github.com/seck-project/seck/archive/refs/tags/v${version}.tar.gz"

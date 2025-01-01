@@ -7,10 +7,16 @@ version = "0.0.0"
 [lints.rust]
 unsafe_code = "deny"
 
-[dev-dependencies]
-trybuild = "1"
+[dependencies]
+# Listed under [dependencies] (not [dev-dependencies]) so trybuild's
+# PathDependencies normalization rewrites their absolute paths to
+# `$SECK_TAINT` / `$SECK_FD` in the .stderr files. Without this the
+# user's home directory leaks into every committed stderr.
 seck-taint = { path = "../../crates/seck-taint" }
 seck-fd = { path = "../../crates/seck-fd" }
+
+[dev-dependencies]
+trybuild = "1"
 
 [[test]]
 name = "compile_fail"

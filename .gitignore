@@ -12,3 +12,11 @@ fuzz/artifacts
 # Swift Package Manager build output (Seck.app applet)
 .build/
 **/.build/
+
+# Lean / Lake build artifacts (Plan 05)
+proof/.lake/
+**/.lake/
+proof/lake-manifest.json
+
+# Tool-state directories that should never be committed
+.claude/

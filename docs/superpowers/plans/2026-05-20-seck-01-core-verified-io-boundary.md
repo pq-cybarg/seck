@@ -214,7 +214,7 @@ edition = "2024"
 rust-version = "1.85"
 version = "0.1.0"
 license = "AGPL-3.0-or-later"
-authors = ["Forrest Shooster <forrest.z.shooster@gmail.com>"]
+authors = ["pq-cybarg <resistant@tuta.com>"]
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -3207,7 +3207,7 @@ git commit -m "ci: build, fmt, clippy, test, trybuild, escape suite"
 
 ## Reporting a vulnerability
 
-Email <forrest.z.shooster@gmail.com> with subject "seck security:".
+Email <resistant@tuta.com> with subject "seck security:".
 
 ## What seck claims
 

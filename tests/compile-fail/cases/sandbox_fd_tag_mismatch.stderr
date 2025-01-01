@@ -9,7 +9,7 @@ error[E0308]: mismatched types
    = note: expected reference `&SandboxFd<seck_fd::Stdin>`
               found reference `&SandboxFd<seck_fd::Report>`
 note: function defined here
-  --> /Users/fzshooster/Desktop/priv/seck/crates/seck-fd/src/lib.rs:60:8
+  --> $SECK_FD/src/lib.rs
    |
-60 | pub fn write_to_sandbox_pipe(
+   | pub fn write_to_sandbox_pipe(
    |        ^^^^^^^^^^^^^^^^^^^^^
