@@ -1,0 +1,17 @@
+error[E0277]: the trait bound `Cow<'_, str>: From<Tainted<Vec<u8>>>` is not satisfied
+ --> cases/tainted_into_cow.rs:6:30
+  |
+6 |     let _c: Cow<'_, str> = t.into();
+  |                              ^^^^ the trait `From<Tainted<Vec<u8>>>` is not implemented for `Cow<'_, str>`
+  |
+  = help: the following other types implement trait `From<T>`:
+            `Cow<'_, ByteStr>` implements `From<&ByteStr>`
+            `Cow<'_, ByteStr>` implements `From<&ByteString>`
+            `Cow<'_, ByteStr>` implements `From<ByteString>`
+            `Cow<'_, CStr>` implements `From<&CStr>`
+            `Cow<'_, CStr>` implements `From<&CString>`
+            `Cow<'_, CStr>` implements `From<CString>`
+            `Cow<'_, OsStr>` implements `From<&OsStr>`
+            `Cow<'_, OsStr>` implements `From<&OsString>`
+          and $N others
+  = note: required for `Tainted<Vec<u8>>` to implement `Into<Cow<'_, str>>`

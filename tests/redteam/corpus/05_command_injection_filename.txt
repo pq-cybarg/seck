@@ -1,0 +1,1 @@
+This file's *name* is the payload. The actual filename in the integration smoke test is `$(touch /tmp/pwn).txt` — the smoke test asserts the host never executes the embedded command.

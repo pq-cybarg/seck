@@ -1,0 +1,13 @@
+error[E0277]: the trait bound `PathBuf: From<Tainted<Vec<u8>>>` is not satisfied
+ --> cases/tainted_into_path_buf.rs:6:25
+  |
+6 |     let _p: PathBuf = t.into();
+  |                         ^^^^ the trait `From<Tainted<Vec<u8>>>` is not implemented for `PathBuf`
+  |
+  = help: the following other types implement trait `From<T>`:
+            `PathBuf` implements `From<&T>`
+            `PathBuf` implements `From<Box<Path>>`
+            `PathBuf` implements `From<Cow<'_, Path>>`
+            `PathBuf` implements `From<OsString>`
+            `PathBuf` implements `From<String>`
+  = note: required for `Tainted<Vec<u8>>` to implement `Into<PathBuf>`

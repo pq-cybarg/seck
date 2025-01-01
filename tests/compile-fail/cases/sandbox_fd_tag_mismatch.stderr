@@ -1,0 +1,15 @@
+error[E0308]: mismatched types
+  --> cases/sandbox_fd_tag_mismatch.rs:12:30
+   |
+12 |     write_to_sandbox_pipe(t, &report_fd);
+   |     ---------------------    ^^^^^^^^^^ expected `&SandboxFd<Stdin>`, found `&SandboxFd<Report>`
+   |     |
+   |     arguments to this function are incorrect
+   |
+   = note: expected reference `&SandboxFd<seck_fd::Stdin>`
+              found reference `&SandboxFd<seck_fd::Report>`
+note: function defined here
+  --> /Users/fzshooster/Desktop/priv/seck/crates/seck-fd/src/lib.rs:60:8
+   |
+60 | pub fn write_to_sandbox_pipe(
+   |        ^^^^^^^^^^^^^^^^^^^^^

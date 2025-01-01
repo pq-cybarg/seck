@@ -1,0 +1,34 @@
+# seccomp allowlist for seck-reader (Plan 01, Linux).
+# Default action: kill the process (SCMP_ACT_KILL_PROCESS).
+default_action = "kill_process"
+
+[[allow]]
+syscall = "read"
+[[allow]]
+syscall = "write"
+[[allow]]
+syscall = "mmap"
+[[allow]]
+syscall = "munmap"
+[[allow]]
+syscall = "mprotect"
+[[allow]]
+syscall = "brk"
+[[allow]]
+syscall = "rt_sigreturn"
+[[allow]]
+syscall = "exit_group"
+[[allow]]
+syscall = "clock_gettime"
+[[allow]]
+syscall = "execveat"
+[[allow]]
+syscall = "futex"
+[[allow]]
+syscall = "sched_yield"
+[[allow]]
+syscall = "fstat"
+[[allow]]
+syscall = "newfstatat"
+[[allow]]
+syscall = "getrusage"
