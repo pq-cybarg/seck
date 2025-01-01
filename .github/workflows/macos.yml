@@ -1,0 +1,21 @@
+name: macos
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: clippy, rustfmt }
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo build --release --workspace
+      - run: cargo test --release --workspace
+      - name: trybuild compile-fail
+        run: cd tests/compile-fail && cargo test --test compile_fail
+      - name: SBPL profile parses
+        run: |
+          /usr/bin/sandbox-exec -D MODEL_DIR=/tmp -D INFER_BIN=/bin/echo \
+            -f platform/macos/seatbelt.sb /bin/echo "profile loads"
+      - name: macOS Seatbelt-escape suite
+        run: cd tests/escape-macos && cargo test --release
