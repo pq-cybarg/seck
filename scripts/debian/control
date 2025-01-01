@@ -1,0 +1,14 @@
+Source: seck
+Section: utils
+Priority: optional
+Maintainer: seck <forrest.z.shooster@gmail.com>
+Build-Depends: debhelper-compat (= 13), cargo, libseccomp-dev
+Standards-Version: 4.6.2
+
+Package: seck
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libseccomp2
+Description: Sandboxed-LLM file/project analyzer
+ seck runs a local LLM against a file or directory inside a
+ Landlock+seccomp sandbox with strong typestate guarantees that
+ untrusted bytes never reach argv/env/paths/URLs/DNS.

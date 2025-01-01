@@ -1,0 +1,21 @@
+[package]
+name = "seck-release-sign"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "seck-release-sign"
+path = "src/main.rs"
+
+[dependencies]
+seck-crypto = { path = "../seck-crypto" }
+clap = { version = "4", features = ["derive"] }
+anyhow.workspace = true
+hex.workspace = true

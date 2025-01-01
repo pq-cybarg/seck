@@ -1,0 +1,13 @@
+# Template file for 'seck'
+pkgname=seck
+version=0.1.0
+revision=1
+build_style=cargo
+hostmakedepends="cargo"
+makedepends="libseccomp-devel"
+short_desc="Sandboxed-LLM file/project analyzer"
+maintainer="seck <forrest.z.shooster@gmail.com>"
+license="AGPL-3.0-or-later"
+homepage="https://github.com/seck-project/seck"
+distfiles="https://github.com/seck-project/seck/archive/refs/tags/v${version}.tar.gz"
+checksum="REPLACE_AT_RELEASE"
