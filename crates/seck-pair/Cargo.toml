@@ -1,0 +1,23 @@
+[package]
+name = "seck-pair"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-crypto = { path = "../seck-crypto" }
+boringtun = "0.6"
+qrcode = { version = "0.14", default-features = false }
+sha3.workspace = true
+hex.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+anyhow.workspace = true
+rand.workspace = true
+x25519-dalek = { version = "=2.0.0-rc.3", features = ["static_secrets"] }
