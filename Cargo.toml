@@ -17,8 +17,10 @@ members = [
     "crates/seck-mem-hard",
     "crates/seck-models",
     "crates/seck-host-net",
+    "crates/seck-pipeline",
+    "crates/seck-canaries",
 ]
-exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/integration"]
+exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/integration", "tests/pipeline"]
 
 [workspace.package]
 edition = "2024"

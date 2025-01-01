@@ -1,0 +1,22 @@
+[package]
+name = "seck-pipeline"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-plugin = { path = "../seck-plugin" }
+seck-crypto = { path = "../seck-crypto" }
+sha3.workspace = true
+hex.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true

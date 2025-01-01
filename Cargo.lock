@@ -1794,6 +1794,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "seck-canaries"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "rand",
+ "seck-crypto",
+ "serde",
+]
+
+[[package]]
 name = "seck-cli"
 version = "0.1.0"
 dependencies = [
@@ -1923,6 +1933,21 @@ dependencies = [
  "thiserror",
  "toml",
  "xdg",
+]
+
+[[package]]
+name = "seck-pipeline"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "hex",
+ "seck-crypto",
+ "seck-plugin",
+ "serde",
+ "serde_json",
+ "sha3",
+ "thiserror",
+ "tracing",
 ]
 
 [[package]]
