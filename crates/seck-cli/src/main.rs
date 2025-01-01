@@ -2,6 +2,7 @@
 
 use anyhow::Context;
 use clap::Parser;
+#[cfg(unix)]
 use std::os::fd::FromRawFd;
 use std::path::PathBuf;
 
@@ -100,6 +101,18 @@ fn main() -> anyhow::Result<()> {
     }
 }
 
+#[cfg(not(unix))]
+fn analyze(_args: AnalyzeArgs) -> anyhow::Result<()> {
+    anyhow::bail!(
+        "`seck analyze` on Windows is not yet fully wired: Plan 16 ships the \
+         AppContainer sandbox + HANDLE-handoff orchestrator (code-only) but \
+         the CLI pipeline (walker, FileSet, run_sandboxed) is Unix-only. \
+         Use WSL2 for end-to-end analysis until the Windows orchestrator is \
+         hooked up here."
+    );
+}
+
+#[cfg(unix)]
 fn analyze(args: AnalyzeArgs) -> anyhow::Result<()> {
     if args.fips {
         seck_crypto::fips::enable_fips();
