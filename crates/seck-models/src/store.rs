@@ -1,12 +1,29 @@
-//! Model cache layout under $XDG_CACHE_HOME/seck/models/<sha3-prefix>/<basename>.
+//! Model cache layout:
+//!   Unix:    `$XDG_CACHE_HOME/seck/models/<sha3-prefix>/<basename>`
+//!            (falls back to `/tmp/seck-models` if XDG isn't usable).
+//!   Windows: `%LOCALAPPDATA%/seck/models/<sha3-prefix>/<basename>`
+//!            (falls back to `C:\Temp\seck-models`).
 
 use std::path::PathBuf;
 
-pub fn store_path(sha3_256_hex: &str, gguf_url: &str) -> PathBuf {
-    let base = xdg::BaseDirectories::new()
+#[cfg(unix)]
+fn cache_root() -> PathBuf {
+    xdg::BaseDirectories::new()
         .ok()
         .and_then(|b| b.create_cache_directory("seck/models").ok())
-        .unwrap_or_else(|| std::path::PathBuf::from("/tmp/seck-models"));
+        .unwrap_or_else(|| PathBuf::from("/tmp/seck-models"))
+}
+
+#[cfg(windows)]
+fn cache_root() -> PathBuf {
+    std::env::var_os("LOCALAPPDATA")
+        .map(PathBuf::from)
+        .map(|p| p.join("seck").join("models"))
+        .unwrap_or_else(|| PathBuf::from(r"C:\Temp\seck-models"))
+}
+
+pub fn store_path(sha3_256_hex: &str, gguf_url: &str) -> PathBuf {
+    let base = cache_root();
     let prefix = &sha3_256_hex.get(..16).unwrap_or(sha3_256_hex);
     let basename = gguf_url.rsplit('/').next().unwrap_or("model.gguf");
     base.join(prefix).join(basename)

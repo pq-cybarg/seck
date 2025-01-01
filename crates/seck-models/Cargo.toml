@@ -16,6 +16,11 @@ serde = { workspace = true, features = ["derive"] }
 toml = "0.8"
 hex.workspace = true
 thiserror.workspace = true
+
+# xdg is Linux/BSD-only (XDG basedir spec). On Windows we fall back to
+# %LOCALAPPDATA% via std::env. On macOS xdg crate works but is
+# non-idiomatic; we use it there too for consistency with Linux.
+[target.'cfg(unix)'.dependencies]
 xdg = "2"
 
 [dev-dependencies]
