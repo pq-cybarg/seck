@@ -1189,6 +1189,13 @@ dependencies = [
 [[package]]
 name = "seck-reader"
 version = "0.1.0"
+dependencies = [
+ "base64",
+ "hex",
+ "seck-proto",
+ "sha3",
+ "thiserror",
+]
 
 [[package]]
 name = "seck-report"
