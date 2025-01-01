@@ -19,7 +19,9 @@ seck-host = { path = "../seck-host" }
 seck-report = { path = "../seck-report" }
 seck-crypto = { path = "../seck-crypto" }
 seck-audit = { path = "../seck-audit" }
-clap.workspace = true
+seck-models = { path = "../seck-models" }
+seck-host-net = { path = "../seck-host-net" }
+clap = { version = "4", features = ["derive", "env"] }
 anyhow.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
