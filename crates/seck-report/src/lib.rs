@@ -1,1 +1,5 @@
-// Stub — implemented in Plan 01 Task 14.
+//! Report schema + terminal-safe sanitizer + renderer.
+
+pub mod renderer;
+pub mod sanitize;
+pub mod schema;
