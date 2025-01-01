@@ -137,16 +137,9 @@ fn read_to_end_from_fd<Tag>(
 
 /// Approach B: two-process capability split.
 ///
-/// - `reader_bytes_binary` (typically `seck-reader --mode=bytes-to-ipc`)
-///   sees the raw bytes from FD 3, base64-encodes them, and emits a
-///   line-delimited IPC stream on FD 7.
-/// - `reader_priv_binary` (the `seck-reader-priv` bin) consumes the IPC
-///   on its FD 3 and writes the report on FD 5. It has NO dependency on
-///   `seck-taint`; the type `Tainted<Vec<u8>>` is not even in scope, so
-///   it cannot be constructed there in principle.
+/// `reader_bytes_binary` (typically `seck-reader --mode=bytes-to-ipc`) sees the raw bytes from FD 3, base64-encodes them, and emits a line-delimited IPC stream on FD 7. `reader_priv_binary` (the `seck-reader-priv` bin) consumes the IPC on its FD 3 and writes the report on FD 5. It has NO dependency on `seck-taint`; the type `Tainted<Vec<u8>>` is not even in scope, so it cannot be constructed there in principle.
 ///
-/// CI gate `scripts/check-approach-b-invariant.sh` enforces the no-dep
-/// rule at the workspace level.
+/// CI gate `scripts/check-approach-b-invariant.sh` enforces the no-dep rule at the workspace level.
 ///
 /// Pipe topology:
 ///

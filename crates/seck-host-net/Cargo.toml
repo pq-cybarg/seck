@@ -12,22 +12,19 @@ workspace = true
 
 [dependencies]
 seck-crypto = { path = "../seck-crypto" }
-# `rustls-tls-webpki-roots` is the explicit form of the `rustls-tls`
-# meta-feature — it pulls in `__rustls`, `__rustls-ring`, and the
-# webpki root certificates. Naming the concrete feature avoids a
-# resolver-3 unification quirk where on some Linux toolchains the
-# `rustls-tls` shortcut activates the `__rustls` cfg-block in
-# reqwest's source without pulling `rustls-pki-types` into the build
-# graph (E0463 at compile time). See repro/build_* CI failures
-# 2026-05-24 for the symptom.
+# Use native-tls (system OpenSSL on Linux, SecureChannel on macOS,
+# SChannel on Windows) instead of rustls. Reqwest 0.12 + resolver-3
+# has a known issue where the rustls-tls feature chain depends on
+# `__`-prefixed private features that resolver-3 sometimes refuses to
+# propagate across the dep chain, leading to E0463 'can't find crate
+# for rustls_pki_types' inside reqwest's own source on Linux under
+# --locked. native-tls is unaffected, and the seck-host-net download
+# path only needs HTTPS to public model mirrors — either backend is
+# equivalent for that use case.
 reqwest = { version = "0.12", default-features = false, features = [
-    "rustls-tls-webpki-roots",
+    "default-tls",
     "blocking",
 ] }
-# Force rustls + rustls-pki-types into the build graph directly so the
-# resolver cannot drop them under any feature-unification path.
-rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
-rustls-pki-types = "1"
 sha3.workspace = true
 hex.workspace = true
 thiserror.workspace = true

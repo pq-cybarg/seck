@@ -34,7 +34,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+      <!-- /SAFESEH is an x86-only linker switch; x64 unwinds via the
+           SE tables in the .pdata section and rejects /SAFESEH with
+           LNK1246. Omit it for x64. -->
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <ModuleDefinitionFile>SeckShellExt.def</ModuleDefinitionFile>
       <AdditionalDependencies>shlwapi.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>

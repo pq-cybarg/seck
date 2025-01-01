@@ -39,8 +39,9 @@ pub fn download_verified(
         return Err(DlError::DisallowedHost(host.into()));
     }
 
+    // TLS backend is native-tls (see Cargo.toml comment). https_only
+    // forces the scheme check regardless of backend.
     let client = reqwest::blocking::Client::builder()
-        .use_rustls_tls()
         .https_only(true)
         .build()?;
     let mut resp = client.get(url).send()?.error_for_status()?;
