@@ -8,6 +8,7 @@ use std::path::PathBuf;
 mod audit;
 mod mcp;
 mod models;
+mod pair;
 mod tui;
 mod verify_proof;
 mod web;
@@ -35,6 +36,8 @@ enum Cmd {
     Tui(tui::TuiArgs),
     /// Verify the Lean 4 proof of the IO-boundary theorem builds clean.
     VerifyProof,
+    /// Pair a mobile share-target (Plan 17) via WireGuard-on-LAN.
+    Pair(pair::PairArgs),
 }
 
 #[derive(clap::Args)]
@@ -91,6 +94,7 @@ fn main() -> anyhow::Result<()> {
         Cmd::Web(a) => web::run(a),
         Cmd::Tui(a) => tui::run(a),
         Cmd::VerifyProof => verify_proof::run(),
+        Cmd::Pair(a) => pair::run(a),
     }
 }
 

@@ -29,8 +29,9 @@ members = [
     "crates/seck-reader-ipc",
     "crates/seck-reader-priv",
     "crates/seck-trace-check",
+    "crates/seck-pair",
 ]
-exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/integration", "tests/pipeline"]
+exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/escape-windows", "tests/integration", "tests/pipeline", "tests/pair"]
 
 [workspace.package]
 edition = "2024"
