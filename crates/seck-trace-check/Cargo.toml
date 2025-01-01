@@ -1,0 +1,25 @@
+[package]
+name = "seck-trace-check"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[lib]
+name = "seck_trace_check"
+path = "src/lib.rs"
+
+[[bin]]
+name = "seck-trace-check"
+path = "src/bin/trace_check.rs"
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true

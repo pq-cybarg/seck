@@ -1,0 +1,33 @@
+name: proof
+
+on: [push, pull_request]
+
+jobs:
+  lake_build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: lake build
+        working-directory: proof
+        run: |
+          lake update
+          lake build
+
+      - name: forbid sorry/admit in load-bearing files
+        run: |
+          if grep -nE 'sorry|admit' \
+              proof/Seck/IOBoundary.lean \
+              proof/Seck/Correspondence.lean \
+              proof/Seck/HostModel.lean \
+              proof/Seck/ReaderModel.lean; then
+            echo "ERROR: sorry/admit present in load-bearing proof files"
+            exit 1
+          fi
+          echo "OK: no sorry/admit in load-bearing files"
