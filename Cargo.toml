@@ -26,6 +26,8 @@ members = [
     "crates/seck-portal",
     "crates/seck-release-sign",
     "crates/seck-verify-release",
+    "crates/seck-reader-ipc",
+    "crates/seck-reader-priv",
 ]
 exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/integration", "tests/pipeline"]
 

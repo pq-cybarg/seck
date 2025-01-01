@@ -19,6 +19,7 @@ seck-plugin = { path = "../seck-plugin" }
 seck-proto = { path = "../seck-proto" }
 seck-sandbox = { path = "../seck-sandbox" }
 seck-infer = { path = "../seck-infer" }
+seck-reader-ipc = { path = "../seck-reader-ipc" }
 sha3.workspace = true
 hex.workspace = true
 base64 = "0.22"

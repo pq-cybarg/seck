@@ -1,0 +1,30 @@
+[package]
+name = "seck-reader-priv"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "seck-reader-priv"
+path = "src/main.rs"
+
+# IMPORTANT: NO dependency on seck-taint. A compile-fail test in
+# tests/compile-fail/cases/priv_imports_seck_taint.rs verifies this.
+# The whole point of Approach B is that the priv process never sees
+# raw file bytes — only the structured Message values from seck-reader-ipc.
+
+[dependencies]
+seck-reader-ipc = { path = "../seck-reader-ipc" }
+seck-sandbox = { path = "../seck-sandbox" }
+seck-plugin = { path = "../seck-plugin" }
+seck-infer = { path = "../seck-infer" }
+seck-crypto = { path = "../seck-crypto" }
+serde_json.workspace = true
+hex.workspace = true
+anyhow.workspace = true
