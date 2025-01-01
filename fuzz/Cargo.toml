@@ -12,6 +12,7 @@ libfuzzer-sys = "0.4"
 seck-reader = { path = "../crates/seck-reader" }
 seck-report = { path = "../crates/seck-report" }
 seck-proto = { path = "../crates/seck-proto" }
+seck-trace-check = { path = "../crates/seck-trace-check" }
 
 [[bin]]
 name = "prompt_assembler"
@@ -28,5 +29,11 @@ doc = false
 [[bin]]
 name = "protocol_parser"
 path = "fuzz_targets/protocol_parser.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "trace_invariant"
+path = "fuzz_targets/trace_invariant.rs"
 test = false
 doc = false
