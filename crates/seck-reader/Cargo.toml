@@ -1,6 +1,21 @@
 [package]
 name = "seck-reader"
 edition.workspace = true
+rust-version.workspace = true
 version.workspace = true
 license.workspace = true
+authors.workspace = true
 publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-proto = { path = "../seck-proto" }
+sha3.workspace = true
+hex.workspace = true
+base64 = "0.22"
+thiserror.workspace = true
+
+[dev-dependencies]
+base64 = "0.22"
