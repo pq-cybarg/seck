@@ -1,0 +1,5 @@
+error[E0451]: field `_private` of struct `SinkToken` is private
+ --> cases/sink_token_field_private.rs:5:28
+  |
+5 |     let _bad = SinkToken { _private: () };
+  |                            ^^^^^^^^ private field

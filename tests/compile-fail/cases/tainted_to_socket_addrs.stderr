@@ -1,0 +1,5 @@
+error[E0599]: no method named `to_socket_addrs` found for struct `Tainted<T>` in the current scope
+ --> cases/tainted_to_socket_addrs.rs:7:15
+  |
+7 |     let _ = t.to_socket_addrs();
+  |               ^^^^^^^^^^^^^^^ method not found in `Tainted<Vec<u8>>`
