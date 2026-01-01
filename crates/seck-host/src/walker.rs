@@ -77,10 +77,18 @@ fn walk_inner(
             return Err(WalkError::Limit("max_total_bytes".into()));
         }
         let fd = open_target(current).map_err(|e| WalkError::Resolve(format!("{e}")))?;
-        let relative = current
+        let mut relative = current
             .strip_prefix(root)
             .unwrap_or(current)
             .to_path_buf();
+        // If the caller passed a single file (root == current), the strip_prefix
+        // result is an empty path. Use the file name in that case so the report
+        // and prompt have a sensible "path" field.
+        if relative.as_os_str().is_empty() {
+            if let Some(name) = current.file_name() {
+                relative = name.into();
+            }
+        }
         out.push(Entry {
             relative,
             fd,
