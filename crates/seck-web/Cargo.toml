@@ -1,0 +1,22 @@
+[package]
+name = "seck-web"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-report = { path = "../seck-report" }
+axum = "0.8"
+tokio = { workspace = true, features = ["full"] }
+rand.workspace = true
+hex.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+html-escape = "0.2"
