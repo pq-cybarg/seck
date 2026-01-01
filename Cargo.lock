@@ -2645,6 +2645,7 @@ dependencies = [
  "seck-tui",
  "seck-web",
  "serde_json",
+ "tempfile",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -2831,10 +2832,34 @@ dependencies = [
  "seck-infer",
  "seck-plugin",
  "seck-proto",
+ "seck-reader-ipc",
  "seck-sandbox",
  "serde_json",
  "sha3",
  "thiserror 2.0.18",
+]
+
+[[package]]
+name = "seck-reader-ipc"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "seck-reader-priv"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "hex",
+ "seck-crypto",
+ "seck-infer",
+ "seck-plugin",
+ "seck-reader-ipc",
+ "seck-sandbox",
+ "serde_json",
 ]
 
 [[package]]
