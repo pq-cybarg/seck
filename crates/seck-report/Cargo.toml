@@ -1,0 +1,6 @@
+[package]
+name = "seck-report"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
