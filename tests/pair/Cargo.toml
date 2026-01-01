@@ -1,0 +1,21 @@
+[package]
+name = "seck-pair-integration"
+edition = "2024"
+publish = false
+version = "0.1.0"
+
+[dev-dependencies]
+seck-pair = { path = "../../crates/seck-pair" }
+serde_json = "1"
+
+[[test]]
+name = "handshake"
+path = "tests/handshake.rs"
+
+[[test]]
+name = "unpaired_refused"
+path = "tests/unpaired_refused.rs"
+
+[[test]]
+name = "lan_only"
+path = "tests/lan_only.rs"
