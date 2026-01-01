@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "seck Report",
+  "type": "object",
+  "required": ["version", "invocation", "inputs", "findings"],
+  "properties": {
+    "version": { "type": "string" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id", "summary", "files", "category", "confidence", "evidence_quote"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "summary": { "type": "string" },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "category": { "enum": ["behavior", "risk", "note"] },
+          "confidence": { "enum": ["high", "medium", "low"] },
+          "evidence_quote": { "type": "string" }
+        }
+      }
+    }
+  }
+}
