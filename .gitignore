@@ -8,3 +8,7 @@ fuzz/artifacts
 
 # qemu VM artifacts (boot.sh, cidata/, console.log, *.fd, *.qcow2, *.img, *.iso, sockets)
 .vm/
+
+# Swift Package Manager build output (Seck.app applet)
+.build/
+**/.build/

@@ -2836,6 +2836,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "seck-release-sign"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "hex",
+ "seck-crypto",
+]
+
+[[package]]
 name = "seck-report"
 version = "0.1.0"
 dependencies = [
@@ -2878,6 +2888,15 @@ dependencies = [
  "ratatui",
  "seck-report",
  "serde_json",
+]
+
+[[package]]
+name = "seck-verify-release"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "seck-crypto",
 ]
 
 [[package]]
