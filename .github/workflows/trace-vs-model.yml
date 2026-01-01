@@ -1,0 +1,44 @@
+name: trace-vs-model
+
+on: [push, pull_request]
+
+jobs:
+  trace_audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: install strace + headers
+        run: sudo apt-get update && sudo apt-get install -y strace libseccomp-dev
+
+      - name: build seck (release)
+        run: cargo build --release
+
+      - name: unit tests
+        run: cargo test -p seck-trace-check
+
+      - name: end-to-end strace audit (mode A)
+        run: |
+          CANARY="SECK-FUZZ-$(openssl rand -hex 8)"
+          echo "$CANARY" > /tmp/canary.txt
+          set +e
+          strace -f \
+            -e trace=openat,openat2,execve,execveat,read,write,socket,connect \
+            -s 16384 -o /tmp/strace.out \
+            ./target/release/seck analyze /tmp/canary.txt --sandbox-mode=a
+          set -e
+          ./target/release/seck-trace-check /tmp/strace.out "$CANARY"
+
+      - name: end-to-end strace audit (mode B)
+        run: |
+          CANARY="SECK-FUZZ-$(openssl rand -hex 8)"
+          echo "$CANARY" > /tmp/canaryB.txt
+          set +e
+          strace -f \
+            -e trace=openat,openat2,execve,execveat,read,write,socket,connect \
+            -s 16384 -o /tmp/straceB.out \
+            ./target/release/seck analyze /tmp/canaryB.txt --sandbox-mode=b
+          set -e
+          ./target/release/seck-trace-check /tmp/straceB.out "$CANARY"
