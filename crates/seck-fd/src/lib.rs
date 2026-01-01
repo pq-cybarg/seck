@@ -1,10 +1,14 @@
-//! Capability-typed file descriptors.
+//! Capability-typed file descriptors. Unix-only — `SandboxFd<Tag>` wraps
+//! a raw FD from `std::os::fd`. On Windows the analogue is HANDLE-based
+//! and lives in `seck-host::orchestrator_windows`; this crate compiles
+//! to an empty lib there so `cargo check --workspace` succeeds.
 //!
 //! `SandboxFd<Tag>` proves a FD is owned by us and tagged with its role
 //! (`Stdin`, `Report`, `Egress`). The only function that writes
 //! `Tainted<Vec<u8>>` to anywhere is `write_to_sandbox_pipe`, which consumes
 //! a `SandboxFd<Stdin>`. There is no other way to extract bytes from a
 //! `Tainted`. This is the sole eliminator.
+#![cfg(unix)]
 
 use core::marker::PhantomData;
 use nix::unistd::write;

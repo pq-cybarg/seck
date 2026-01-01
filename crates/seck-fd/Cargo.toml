@@ -12,5 +12,8 @@ workspace = true
 
 [dependencies]
 seck-taint = { path = "../seck-taint" }
-nix.workspace = true
 thiserror.workspace = true
+
+# Crate body is `#![cfg(unix)]`; nix only exists on unix.
+[target.'cfg(unix)'.dependencies]
+nix.workspace = true

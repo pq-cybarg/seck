@@ -8,7 +8,9 @@ use std::path::Path;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ResolveError {
-    #[error("seck-host-unsafe::open_target is Unix-only; Windows uses HANDLE-handoff in seck-host::orchestrator_windows")]
+    #[error(
+        "seck-host-unsafe::open_target is Unix-only; Windows uses HANDLE-handoff in seck-host::orchestrator_windows"
+    )]
     UnsupportedPlatform,
     #[error("io: {0}")]
     Io(#[from] std::io::Error),
