@@ -12,7 +12,22 @@ workspace = true
 
 [dependencies]
 seck-crypto = { path = "../seck-crypto" }
-reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "blocking"] }
+# `rustls-tls-webpki-roots` is the explicit form of the `rustls-tls`
+# meta-feature — it pulls in `__rustls`, `__rustls-ring`, and the
+# webpki root certificates. Naming the concrete feature avoids a
+# resolver-3 unification quirk where on some Linux toolchains the
+# `rustls-tls` shortcut activates the `__rustls` cfg-block in
+# reqwest's source without pulling `rustls-pki-types` into the build
+# graph (E0463 at compile time). See repro/build_* CI failures
+# 2026-05-24 for the symptom.
+reqwest = { version = "0.12", default-features = false, features = [
+    "rustls-tls-webpki-roots",
+    "blocking",
+] }
+# Force rustls + rustls-pki-types into the build graph directly so the
+# resolver cannot drop them under any feature-unification path.
+rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
+rustls-pki-types = "1"
 sha3.workspace = true
 hex.workspace = true
 thiserror.workspace = true

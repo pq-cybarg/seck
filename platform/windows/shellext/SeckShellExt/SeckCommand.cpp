@@ -6,6 +6,7 @@
 
 #include "SeckCommand.h"
 #include <shellapi.h>
+#include <memory>
 #include <string>
 
 using namespace Microsoft::WRL;

@@ -2846,6 +2846,8 @@ version = "0.1.0"
 dependencies = [
  "hex",
  "reqwest",
+ "rustls",
+ "rustls-pki-types",
  "seck-crypto",
  "sha3",
  "tempfile",

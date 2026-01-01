@@ -14,12 +14,27 @@
 //! the only way to do so requires consuming a `Tainted<Vec<u8>>` value,
 //! and this crate has no `Tainted` to consume.
 
+// seck-reader-priv is also Unix-only (inherits FD 3 + FD 5 from the
+// orchestrator). On Windows it isn't built; the windows.yml CI skips
+// the workspace bin that would otherwise fail.
+#[cfg(not(unix))]
+fn main() {
+    eprintln!("seck-reader-priv is Unix-only.");
+    std::process::exit(1);
+}
+
+#[cfg(unix)]
 use anyhow::Context;
+#[cfg(unix)]
 use seck_plugin::{InferenceConfig, LlmBackend};
+#[cfg(unix)]
 use seck_reader_ipc::{Message, read_messages};
+#[cfg(unix)]
 use std::io::{BufReader, Write};
+#[cfg(unix)]
 use std::os::fd::{FromRawFd, OwnedFd};
 
+#[cfg(unix)]
 fn main() {
     if let Err(e) = real_main() {
         eprintln!("seck-reader-priv: {e:?}");
@@ -27,6 +42,7 @@ fn main() {
     }
 }
 
+#[cfg(unix)]
 fn real_main() -> anyhow::Result<()> {
     // Apply sandbox lockdown immediately, before reading anything.
     if let Err(e) = seck_sandbox::apply_self_lockdown() {
