@@ -1,0 +1,50 @@
+name: repro
+on: [push, pull_request]
+
+# Reproducible-build verification. Build the workspace on two distinct
+# Ubuntu LTS releases with --locked + SOURCE_DATE_EPOCH and compare a
+# SHA3-256 over the concatenated, sort-ordered final binaries. They
+# must be bit-identical.
+#
+# Per-artifact flags (strip, codegen-units, debuginfo, opt-level) live
+# in [profile.release] in Cargo.toml so they apply to the FINAL binary
+# only — passing them via RUSTFLAGS makes cargo apply them to library
+# dep rlibs too, which under `-C strip=symbols` corrupts rlibs and
+# breaks downstream linkage (E0463 on serde / rustls_pki_types inside
+# reqwest etc.). RUSTFLAGS here is reserved for LINK-time flags only.
+
+jobs:
+  build_a:
+    runs-on: ubuntu-24.04
+    outputs: { sha3: "${{ steps.h.outputs.sha3 }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install -y libseccomp-dev build-essential cmake clang
+      - run: SOURCE_DATE_EPOCH=1700000000 RUSTFLAGS="-C link-arg=-Wl,-z,relro,-z,now" cargo build --release --workspace --locked
+      - id: h
+        run: |
+          H=$(find target/release -maxdepth 1 -type f -executable -print0 | sort -z | xargs -0 cat | openssl dgst -sha3-256 | awk '{print $2}')
+          echo "sha3=$H" >> $GITHUB_OUTPUT
+
+  build_b:
+    runs-on: ubuntu-22.04
+    outputs: { sha3: "${{ steps.h.outputs.sha3 }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install -y libseccomp-dev build-essential cmake clang
+      - run: SOURCE_DATE_EPOCH=1700000000 RUSTFLAGS="-C link-arg=-Wl,-z,relro,-z,now" cargo build --release --workspace --locked
+      - id: h
+        run: |
+          H=$(find target/release -maxdepth 1 -type f -executable -print0 | sort -z | xargs -0 cat | openssl dgst -sha3-256 | awk '{print $2}')
+          echo "sha3=$H" >> $GITHUB_OUTPUT
+
+  compare:
+    needs: [build_a, build_b]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          A="${{ needs.build_a.outputs.sha3 }}"; B="${{ needs.build_b.outputs.sha3 }}"
+          test "$A" = "$B" || { echo "BUILD NOT REPRODUCIBLE: $A vs $B"; exit 1; }
+          echo "OK — bit-identical across ubuntu-24.04 and ubuntu-22.04 ($A)"
