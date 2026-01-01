@@ -39,7 +39,9 @@
            LNK1246. Omit it for x64. -->
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <ModuleDefinitionFile>SeckShellExt.def</ModuleDefinitionFile>
-      <AdditionalDependencies>shlwapi.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- runtimeobject.lib supplies WinRT runtime symbols WRL pulls
+           in (RoOriginateError used by ClassFactory::LockServer). -->
+      <AdditionalDependencies>shlwapi.lib;ole32.lib;runtimeobject.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
