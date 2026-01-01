@@ -1,0 +1,38 @@
+name: release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install -y libseccomp-dev build-essential cmake clang
+      - run: SOURCE_DATE_EPOCH=1700000000 RUSTFLAGS="-C link-arg=-Wl,-z,relro,-z,now -C codegen-units=1 -C opt-level=3 -C debuginfo=0 -C strip=symbols -C relocation-model=pie" cargo build --release --workspace --locked
+      - name: Generate CycloneDX SBOM
+        run: |
+          cargo install --locked cargo-cyclonedx
+          cargo cyclonedx --format json --override-filename release.sbom.json
+      - name: Bundle artifacts
+        run: |
+          mkdir -p release
+          cp target/release/seck target/release/seck-reader target/release/seck-verify-release release/
+          cp release.sbom.json release/
+          (cd release && sha3sum * > SHA3SUMS)
+      - name: Sign with SLH-DSA
+        env: { SECK_RELEASE_SK_B64: "${{ secrets.SECK_RELEASE_SK_B64 }}" }
+        run: |
+          echo "$SECK_RELEASE_SK_B64" | base64 -d > release/sk.bin
+          for f in release/seck release/seck-reader release/seck-verify-release; do
+            ./target/release/seck-release-sign --key release/sk.bin --in "$f" --out "$f.slhdsa"
+          done
+          shred -u release/sk.bin || rm -f release/sk.bin
+      - uses: actions/attest-build-provenance@v2
+        with: { subject-path: 'release/*' }
+      - uses: softprops/action-gh-release@v2
+        with: { files: 'release/*' }

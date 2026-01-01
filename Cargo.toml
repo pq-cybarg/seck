@@ -24,6 +24,8 @@ members = [
     "crates/seck-tui",
     "crates/seck-bench",
     "crates/seck-portal",
+    "crates/seck-release-sign",
+    "crates/seck-verify-release",
 ]
 exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/integration", "tests/pipeline"]
 
