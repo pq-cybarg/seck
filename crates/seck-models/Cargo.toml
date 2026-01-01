@@ -1,0 +1,22 @@
+[package]
+name = "seck-models"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-crypto = { path = "../seck-crypto" }
+serde = { workspace = true, features = ["derive"] }
+toml = "0.8"
+hex.workspace = true
+thiserror.workspace = true
+xdg = "2"
+
+[dev-dependencies]
+tempfile = "3"
