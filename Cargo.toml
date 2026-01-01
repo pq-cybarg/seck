@@ -43,7 +43,14 @@ exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "
 edition = "2024"
 rust-version = "1.85"
 version = "0.1.0"
-license = "AGPL-3.0-or-later"
+# Workspace default is BSD-3-Clause so library crates can be freely
+# reused by other security projects. The four user-facing application
+# crates — seck-cli, seck-reader, seck-reader-priv, seck-pipeline —
+# override this with `license = "AGPL-3.0-or-later"` in their own
+# Cargo.toml. SaaS-prevention is preserved for the end-user product;
+# the building blocks (typestate, sandbox, crypto, audit log, etc.)
+# are permissive.
+license = "BSD-3-Clause"
 authors = ["pq-cybarg <resistant@tuta.com>"]
 
 [workspace.lints.rust]

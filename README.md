@@ -238,4 +238,11 @@ See `SECURITY.md` and `docs/THREAT_MODEL.md`. Vulnerabilities to <resistant@tuta
 
 ## License
 
-AGPL-3.0-or-later.
+Mixed by design — the building blocks are permissive so other security projects can reuse them; the user-facing application is copyleft to preserve SaaS-prevention.
+
+- **BSD-3-Clause** (`LICENSE-BSD-3-CLAUSE`) — 25 library crates: `seck-taint`, `seck-fd`, `seck-host-unsafe`, `seck-sandbox`, `seck-crypto`, `seck-mem-hard`, `seck-audit`, `seck-pair`, `seck-host-net`, `seck-trace-check`, `seck-release-sign`, `seck-verify-release`, `seck-canaries`, `seck-models`, `seck-plugin`, `seck-proto`, `seck-reader-ipc`, `seck-bench`, `seck-portal`, `seck-report`, `seck-host`, `seck-infer`, `seck-mcp`, `seck-tui`, `seck-web`.
+- **AGPL-3.0-or-later** (`LICENSE-AGPL`) — 4 user-facing application crates: `seck-cli`, `seck-reader`, `seck-reader-priv`, `seck-pipeline`. Running the assembled application as a hosted service requires sharing modifications.
+
+Per-crate license is declared in each `Cargo.toml`. `cargo metadata --format-version 1 --no-deps | jq -r '.packages[] | "\(.license) \(.name)"'` enumerates them.
+
+`proof/` is intended for academic citation under CC-BY-4.0 (the Lean theorem itself is not a software artifact in the traditional sense). `docs/` follows BSD-3-Clause along with the rest of the supporting material.
