@@ -101,16 +101,27 @@ fn analyze(args: AnalyzeArgs) -> anyhow::Result<()> {
     let fileset = seck_host::fileset::build_fileset(entries).context("build fileset")?;
 
     let exe = std::env::current_exe()?;
-    let reader = exe
+    let sib = exe
         .parent()
-        .ok_or_else(|| anyhow::anyhow!("can't locate seck-reader sibling"))?
-        .join("seck-reader");
+        .ok_or_else(|| anyhow::anyhow!("can't locate sibling binaries"))?;
+    let reader = sib.join("seck-reader");
     if !reader.exists() {
         anyhow::bail!("seck-reader not found at {:?}", reader);
     }
 
-    let result = seck_host::orchestrator::run_sandboxed(fileset, &reader)
-        .context("running sandboxed reader")?;
+    let result = match args.sandbox_mode.as_str() {
+        "a" => seck_host::orchestrator::run_sandboxed(fileset, &reader)
+            .context("running sandboxed reader (mode A)")?,
+        "b" => {
+            let reader_priv = sib.join("seck-reader-priv");
+            if !reader_priv.exists() {
+                anyhow::bail!("seck-reader-priv not found at {:?}", reader_priv);
+            }
+            seck_host::orchestrator::run_sandboxed_mode_b(fileset, &reader, &reader_priv)
+                .context("running sandboxed reader (mode B)")?
+        }
+        other => anyhow::bail!("unknown --sandbox-mode: {other} (expected 'a' or 'b')"),
+    };
     let v: serde_json::Value = serde_json::from_slice(&result.report_bytes)
         .context("parsing report JSON")?;
     if args.output == "json" {
@@ -119,6 +130,5 @@ fn analyze(args: AnalyzeArgs) -> anyhow::Result<()> {
         let report: seck_report::schema::Report = serde_json::from_value(v)?;
         print!("{}", seck_report::renderer::render_terminal(&report));
     }
-    let _ = args.sandbox_mode;
     Ok(())
 }
