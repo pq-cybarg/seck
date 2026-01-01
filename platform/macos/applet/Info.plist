@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key><string>net.seck.Applet</string>
+    <key>CFBundleName</key><string>Seck</string>
+    <key>CFBundleDisplayName</key><string>Seck</string>
+    <key>CFBundleExecutable</key><string>SeckApplet</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>0.1.0</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>LSMinimumSystemVersion</key><string>14.0</string>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key><string>Any file</string>
+            <key>CFBundleTypeRole</key><string>Viewer</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>public.item</string>
+                <string>public.folder</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>
