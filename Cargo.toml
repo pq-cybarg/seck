@@ -12,6 +12,9 @@ members = [
     "crates/seck-infer",
     "crates/seck-report",
     "crates/seck-cli",
+    "crates/seck-crypto",
+    "crates/seck-audit",
+    "crates/seck-mem-hard",
 ]
 exclude = ["fuzz", "tests/compile-fail", "tests/escape", "tests/escape-macos", "tests/integration"]
 
