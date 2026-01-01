@@ -13,6 +13,11 @@
 //! Everything else (version, backend name, deterministic flag,
 //! temperature, seed, findings shape, sandbox_attestation.platform,
 //! profile_sha3_256, file path, file size) must match.
+//!
+//! Unix-only — Approach A/B both rely on seck-host's `walker` +
+//! `orchestrator` which are `#[cfg(unix)]`. On Windows `seck analyze`
+//! bails with the Plan-16-stub message; skip the test there.
+#![cfg(unix)]
 
 use serde_json::Value;
 use std::process::Command;
