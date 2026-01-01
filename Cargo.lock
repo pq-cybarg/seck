@@ -1182,6 +1182,9 @@ dependencies = [
 [[package]]
 name = "seck-proto"
 version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "seck-reader"
