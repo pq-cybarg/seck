@@ -21,6 +21,7 @@ seck-crypto = { path = "../seck-crypto" }
 seck-audit = { path = "../seck-audit" }
 seck-models = { path = "../seck-models" }
 seck-host-net = { path = "../seck-host-net" }
+seck-mcp = { path = "../seck-mcp" }
 clap = { version = "4", features = ["derive", "env"] }
 anyhow.workspace = true
 tracing.workspace = true

@@ -6,6 +6,7 @@ use std::os::fd::FromRawFd;
 use std::path::PathBuf;
 
 mod audit;
+mod mcp;
 mod models;
 
 #[derive(Parser)]
@@ -23,6 +24,8 @@ enum Cmd {
     Audit(audit::AuditArgs),
     /// Manage model files (Plan 07 ships only `verify`).
     Models(models::ModelsArgs),
+    /// Run the MCP server over stdio (Plan 12).
+    Mcp(mcp::McpArgs),
 }
 
 #[derive(clap::Args)]
@@ -56,6 +59,7 @@ fn main() -> anyhow::Result<()> {
         Cmd::Analyze(a) => analyze(a),
         Cmd::Audit(a) => audit::run(a),
         Cmd::Models(a) => models::run(a),
+        Cmd::Mcp(a) => mcp::run(a),
     }
 }
 
