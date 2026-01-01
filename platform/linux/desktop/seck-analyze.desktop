@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Analyze with seck
+Comment=Run sandboxed LLM analysis on this file or folder
+Exec=gdbus call --session --dest net.seck.Analyze --object-path /net/seck/Analyze --method net.seck.Analyze.AnalyzePath %f
+Icon=seck
+MimeType=application/octet-stream;inode/directory;text/plain;
+Categories=Utility;Development;
+Terminal=false
+NoDisplay=false

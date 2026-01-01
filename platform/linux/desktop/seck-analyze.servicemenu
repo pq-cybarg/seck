@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=all/all;
+Actions=seckAnalyze;
+X-KDE-Submenu=
+
+[Desktop Action seckAnalyze]
+Name=Analyze with seck
+Icon=seck
+Exec=gdbus call --session --dest net.seck.Analyze --object-path /net/seck/Analyze --method net.seck.Analyze.AnalyzePath %f
