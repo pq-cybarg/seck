@@ -1,6 +1,16 @@
 [package]
 name = "seck-fd"
 edition.workspace = true
+rust-version.workspace = true
 version.workspace = true
 license.workspace = true
+authors.workspace = true
 publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-taint = { path = "../seck-taint" }
+nix.workspace = true
+thiserror.workspace = true
