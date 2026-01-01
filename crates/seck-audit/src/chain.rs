@@ -30,15 +30,18 @@ impl Writer {
             "0".repeat(64)
         };
 
-        // Create file with 0600 if absent.
+        // Create file if absent. Mode 0600 is enforced on Unix via
+        // OpenOptionsExt; on Windows the audit log inherits the
+        // user-profile ACL (the seck install runs single-user).
         if !path.exists() {
-            use std::os::unix::fs::OpenOptionsExt;
-            std::fs::OpenOptions::new()
-                .create(true)
-                .write(true)
-                .truncate(false)
-                .mode(0o600)
-                .open(&path)?;
+            let mut opts = std::fs::OpenOptions::new();
+            opts.create(true).write(true).truncate(false);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                opts.mode(0o600);
+            }
+            opts.open(&path)?;
         }
         Ok(Self { path, tip, sk })
     }
@@ -67,11 +70,14 @@ impl Writer {
             ml_dsa_signature_hex: hex::encode(sig),
         };
         let line = serde_json::to_string(&rec)? + "\n";
-        use std::os::unix::fs::OpenOptionsExt;
-        let mut f = std::fs::OpenOptions::new()
-            .append(true)
-            .mode(0o600)
-            .open(&self.path)?;
+        let mut opts = std::fs::OpenOptions::new();
+        opts.append(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            opts.mode(0o600);
+        }
+        let mut f = opts.open(&self.path)?;
         f.write_all(line.as_bytes())?;
         self.tip = this_hash;
         Ok(())
