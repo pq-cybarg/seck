@@ -9,6 +9,7 @@ mod audit;
 mod mcp;
 mod models;
 mod tui;
+mod verify_proof;
 mod web;
 
 #[derive(Parser)]
@@ -32,6 +33,8 @@ enum Cmd {
     Web(web::WebArgs),
     /// Open a saved report in the terminal UI (Plan 10).
     Tui(tui::TuiArgs),
+    /// Verify the Lean 4 proof of the IO-boundary theorem builds clean.
+    VerifyProof,
 }
 
 #[derive(clap::Args)]
@@ -68,6 +71,7 @@ fn main() -> anyhow::Result<()> {
         Cmd::Mcp(a) => mcp::run(a),
         Cmd::Web(a) => web::run(a),
         Cmd::Tui(a) => tui::run(a),
+        Cmd::VerifyProof => verify_proof::run(),
     }
 }
 

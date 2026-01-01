@@ -50,3 +50,40 @@
 | AES-256-GCM-SIV / XChaCha20-Poly1305 | Symmetric AEAD where needed | `seck-crypto::sym` |
 
 CI enforces "no SHA-2 in source" via `scripts/audit-no-sha2.sh`. The `--fips` runtime flag (`seck-crypto::fips::enable_fips()`) is a forward-looking gate that refuses any algorithm not on the NIST FIPS 203/204/205 allow-list — currently a no-op because every exposed primitive is already FIPS-aligned.
+
+## Layer 3 — Lean 4 machine-checked proof
+
+`proof/` contains a Lean 4 Lake project that proves the IO-boundary
+theorem: any program built from the host/reader models in
+`proof/Seck/HostModel.lean` and `proof/Seck/ReaderModel.lean` produces a
+`Trace` that satisfies `Trace.satisfiesIOBoundary`:
+
+- `openP` paths are never tainted;
+- `execP` paths, argv entries, and env entries are never tainted;
+- the trace contains no `netConn` step;
+- every `writeF` of tainted bytes goes to FD 3 (the sandbox stdin) or
+  FD 5 (the report pipe).
+
+`proof/Seck/IOBoundary.lean` discharges every case structurally or via
+two audited correspondence axioms documented in
+`proof/CORRESPONDENCE.md`. `lake build` succeeds with zero `sorry` /
+`admit` in the load-bearing files — enforced both by
+`.github/workflows/proof.yml` and by `seck verify-proof` locally.
+
+The Lean proof shows the boundary holds *in the model*. The Rust
+runtime side is audited by three independent enforcers, any one of
+which would catch an implementation bypass:
+
+1. Plan-01 Rust typestate (20 trybuild compile-fail cases on
+   `Tainted<T>` conversions).
+2. Plan-01 ptrace canary check (every CI run injects a per-run canary
+   and asserts it never appears in argv/env/paths/sockets).
+3. Plan-05 `seck-trace-check` (Rust analog of `Trace.checkIOBoundary`;
+   parses real strace output, fuzz-driven by cargo-fuzz
+   `trace_invariant`, wired into CI via
+   `.github/workflows/trace-vs-model.yml`).
+
+Approach B (Plan 04) adds a further compile-time guarantee enforced at
+the workspace level: `crates/seck-reader-priv/` has no dependency on
+`seck-taint`, so the type `Tainted<T>` is not even in scope in that
+crate — `scripts/check-approach-b-invariant.sh` is the CI gate.
