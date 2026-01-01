@@ -1,0 +1,16 @@
+name: crypto-audit
+on: [push, pull_request]
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: No SHA-2 in source
+        run: chmod +x scripts/audit-no-sha2.sh && ./scripts/audit-no-sha2.sh
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Crypto KAT tests
+        run: cargo test --release -p seck-crypto
+      - name: Audit log chain tests
+        run: cargo test --release -p seck-audit
+      - name: Memory hardening tests
+        run: cargo test --release -p seck-mem-hard

@@ -1,0 +1,23 @@
+[package]
+name = "seck-audit"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-crypto = { path = "../seck-crypto" }
+xdg = "2"
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+hex.workspace = true
+thiserror.workspace = true
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+
+[dev-dependencies]
+tempfile = "3"
