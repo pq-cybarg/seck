@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+  <action>
+    <icon>seck</icon>
+    <name>Analyze with seck</name>
+    <command>gdbus call --session --dest net.seck.Analyze --object-path /net/seck/Analyze --method net.seck.Analyze.AnalyzePath %f</command>
+    <description>Run sandboxed LLM analysis</description>
+    <patterns>*</patterns>
+    <directories/>
+    <audio-files/>
+    <image-files/>
+    <other-files/>
+    <text-files/>
+    <video-files/>
+  </action>
+</actions>
