@@ -1,0 +1,13 @@
+error[E0277]: the trait bound `OsString: From<Tainted<Vec<u8>>>` is not satisfied
+ --> cases/tainted_into_os_string.rs:6:26
+  |
+6 |     let _o: OsString = t.into();
+  |                          ^^^^ the trait `From<Tainted<Vec<u8>>>` is not implemented for `OsString`
+  |
+  = help: the following other types implement trait `From<T>`:
+            `OsString` implements `From<&T>`
+            `OsString` implements `From<Box<OsStr>>`
+            `OsString` implements `From<Cow<'_, OsStr>>`
+            `OsString` implements `From<PathBuf>`
+            `OsString` implements `From<String>`
+  = note: required for `Tainted<Vec<u8>>` to implement `Into<OsString>`

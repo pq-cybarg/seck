@@ -1,0 +1,14 @@
+error[E0277]: the trait bound `String: From<Tainted<Vec<u8>>>` is not satisfied
+ --> cases/tainted_into_string.rs:5:24
+  |
+5 |     let _s: String = t.into();
+  |                        ^^^^ the trait `From<Tainted<Vec<u8>>>` is not implemented for `String`
+  |
+  = help: the following other types implement trait `From<T>`:
+            `String` implements `From<&String>`
+            `String` implements `From<&mut str>`
+            `String` implements `From<&str>`
+            `String` implements `From<Box<str>>`
+            `String` implements `From<Cow<'_, str>>`
+            `String` implements `From<char>`
+  = note: required for `Tainted<Vec<u8>>` to implement `Into<String>`

@@ -1,0 +1,24 @@
+[package]
+name = "seck-cli"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "seck"
+path = "src/main.rs"
+
+[dependencies]
+seck-host = { path = "../seck-host" }
+seck-report = { path = "../seck-report" }
+clap.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+serde_json.workspace = true

@@ -1,0 +1,23 @@
+[package]
+name = "seck-sandbox"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+seck-plugin = { path = "../seck-plugin" }
+sha3.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+nix.workspace = true
+landlock = "0.4"
+seccompiler = "0.5"
+libc.workspace = true

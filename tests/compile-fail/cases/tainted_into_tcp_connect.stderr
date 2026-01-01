@@ -1,0 +1,23 @@
+error[E0277]: the trait bound `Tainted<Vec<u8>>: ToSocketAddrs` is not satisfied
+ --> cases/tainted_into_tcp_connect.rs:6:32
+  |
+6 |     let _ = TcpStream::connect(t);
+  |             ------------------ ^ the trait `ToSocketAddrs` is not implemented for `Tainted<Vec<u8>>`
+  |             |
+  |             required by a bound introduced by this call
+  |
+  = help: the following other types implement trait `ToSocketAddrs`:
+            &'a [std::net::SocketAddr]
+            &T
+            (&str, u16)
+            (IpAddr, u16)
+            (Ipv4Addr, u16)
+            (Ipv6Addr, u16)
+            (String, u16)
+            SocketAddrV4
+          and $N others
+note: required by a bound in `TcpStream::connect`
+ --> $RUST/std/src/net/tcp.rs
+  |
+  |     pub fn connect<A: ToSocketAddrs>(addr: A) -> io::Result<TcpStream> {
+  |                       ^^^^^^^^^^^^^ required by this bound in `TcpStream::connect`
