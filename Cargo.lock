@@ -2734,6 +2734,8 @@ dependencies = [
  "anyhow",
  "hex",
  "seck-plugin",
+ "serde",
+ "serde_json",
  "sha3",
  "thiserror 2.0.18",
  "tracing",

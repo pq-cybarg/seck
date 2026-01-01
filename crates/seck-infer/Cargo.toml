@@ -10,6 +10,10 @@ publish = false
 [features]
 default = []
 llama-cpp = []
+# Ollama backend over a pre-opened Unix-domain socket.
+ollama = []
+# MLX backend (Apple Silicon only); spawns a separate Swift runner binary.
+mlx = []
 
 [lints]
 workspace = true
@@ -21,3 +25,5 @@ thiserror.workspace = true
 anyhow.workspace = true
 tracing.workspace = true
 hex.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
