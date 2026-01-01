@@ -38,7 +38,7 @@ edition = "2024"
 rust-version = "1.85"
 version = "0.1.0"
 license = "AGPL-3.0-or-later"
-authors = ["Forrest Shooster <forrest.z.shooster@gmail.com>"]
+authors = ["pq-cybarg <resistant@tuta.com>"]
 
 [workspace.lints.rust]
 unsafe_code = "deny"

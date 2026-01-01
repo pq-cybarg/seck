@@ -1,7 +1,7 @@
 Source: seck
 Section: utils
 Priority: optional
-Maintainer: seck <forrest.z.shooster@gmail.com>
+Maintainer: pq-cybarg <resistant@tuta.com>
 Build-Depends: debhelper-compat (= 13), cargo, libseccomp-dev
 Standards-Version: 4.6.2
 

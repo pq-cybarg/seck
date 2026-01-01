@@ -14,5 +14,5 @@ untrusted bytes never reach argv/env/paths/URLs/DNS.
 /usr/bin/seck
 
 %changelog
-* Thu May 22 2026 seck team <forrest.z.shooster@gmail.com> 0.1.0-1
+* Thu May 22 2026 pq-cybarg <resistant@tuta.com> 0.1.0-1
 - Initial RPM packaging.

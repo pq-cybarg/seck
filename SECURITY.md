@@ -2,7 +2,7 @@
 
 ## Reporting
 
-Email <forrest.z.shooster@gmail.com> with subject `seck security: …`.
+Email <resistant@tuta.com> with subject `seck security: …`.
 
 ## What `seck` claims
 

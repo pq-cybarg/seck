@@ -3,7 +3,7 @@
 **Design spec**
 **Date:** 2026-05-19
 **Status:** Draft for review
-**Owner:** forrest.z.shooster@gmail.com
+**Owner:** resistant@tuta.com
 
 ---
 
