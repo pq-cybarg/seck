@@ -1,0 +1,5 @@
+# Landlock ruleset for seck-reader (Plan 01, Linux).
+# Empty ruleset = deny everything Landlock can enforce. The reader already
+# inherited every FD it needs from the host before lockdown.
+ruleset_abi_version = 5
+default = "deny"
