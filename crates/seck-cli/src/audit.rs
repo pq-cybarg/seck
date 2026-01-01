@@ -26,7 +26,8 @@ pub enum AuditOp {
     Tip,
 }
 
-fn xdg_dirs() -> (PathBuf, PathBuf) {
+#[cfg(unix)]
+fn data_dirs() -> (PathBuf, PathBuf) {
     let base = xdg::BaseDirectories::new().expect("XDG base dirs");
     let audit_dir = base
         .create_data_directory("seck/audit")
@@ -37,8 +38,21 @@ fn xdg_dirs() -> (PathBuf, PathBuf) {
     (audit_dir, keys_dir)
 }
 
+#[cfg(windows)]
+fn data_dirs() -> (PathBuf, PathBuf) {
+    let base: PathBuf = std::env::var_os("APPDATA")
+        .map(PathBuf::from)
+        .map(|p| p.join("seck"))
+        .unwrap_or_else(|| PathBuf::from(r"C:\Temp\seck"));
+    let audit_dir = base.join("audit");
+    let keys_dir = base.join("keys");
+    std::fs::create_dir_all(&audit_dir).expect("audit dir");
+    std::fs::create_dir_all(&keys_dir).expect("keys dir");
+    (audit_dir, keys_dir)
+}
+
 pub fn run(args: AuditArgs) -> anyhow::Result<()> {
-    let (audit_dir, keys_dir) = xdg_dirs();
+    let (audit_dir, keys_dir) = data_dirs();
 
     match args.op {
         AuditOp::Init => {
@@ -57,9 +71,13 @@ pub fn run(args: AuditArgs) -> anyhow::Result<()> {
                 .try_fill_bytes(&mut salt)
                 .context("CSPRNG fill")?;
             std::fs::write(&salt_path, salt).context("write salt")?;
-            // Restrict perms on salt to 0600.
-            use std::os::unix::fs::PermissionsExt;
-            std::fs::set_permissions(&salt_path, std::fs::Permissions::from_mode(0o600))?;
+            // Restrict perms on salt to 0600 on Unix; on Windows the
+            // file inherits the user-profile ACL.
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions(&salt_path, std::fs::Permissions::from_mode(0o600))?;
+            }
 
             use std::io::Write;
             print!("Choose an audit-log passphrase (not echoed): ");
@@ -71,8 +89,12 @@ pub fn run(args: AuditArgs) -> anyhow::Result<()> {
             let key = seck_crypto::device_key::derive_device_key(pass.as_bytes(), &salt);
             std::fs::write(&pk_path, &key.public).context("write pk")?;
             std::fs::write(&sk_path, key.secret.as_slice()).context("write sk")?;
-            std::fs::set_permissions(&sk_path, std::fs::Permissions::from_mode(0o600))?;
-            std::fs::set_permissions(&pk_path, std::fs::Permissions::from_mode(0o644))?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions(&sk_path, std::fs::Permissions::from_mode(0o600))?;
+                std::fs::set_permissions(&pk_path, std::fs::Permissions::from_mode(0o644))?;
+            }
             println!("audit dir: {}", audit_dir.display());
             println!(
                 "public key SHA3-256: {}",
