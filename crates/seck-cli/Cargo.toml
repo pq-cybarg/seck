@@ -24,6 +24,7 @@ seck-host-net = { path = "../seck-host-net" }
 seck-mcp = { path = "../seck-mcp" }
 seck-web = { path = "../seck-web" }
 seck-tui = { path = "../seck-tui" }
+seck-pair = { path = "../seck-pair" }
 tokio.workspace = true
 clap = { version = "4", features = ["derive", "env"] }
 anyhow.workspace = true
