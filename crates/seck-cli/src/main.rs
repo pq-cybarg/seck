@@ -8,6 +8,7 @@ use std::path::PathBuf;
 mod audit;
 mod mcp;
 mod models;
+mod tui;
 mod web;
 
 #[derive(Parser)]
@@ -29,6 +30,8 @@ enum Cmd {
     Mcp(mcp::McpArgs),
     /// Serve an HTML report locally (Plan 11).
     Web(web::WebArgs),
+    /// Open a saved report in the terminal UI (Plan 10).
+    Tui(tui::TuiArgs),
 }
 
 #[derive(clap::Args)]
@@ -64,6 +67,7 @@ fn main() -> anyhow::Result<()> {
         Cmd::Models(a) => models::run(a),
         Cmd::Mcp(a) => mcp::run(a),
         Cmd::Web(a) => web::run(a),
+        Cmd::Tui(a) => tui::run(a),
     }
 }
 
