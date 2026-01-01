@@ -1,0 +1,5 @@
+LIBRARY "SeckShellExt"
+EXPORTS
+    DllMain
+    DllCanUnloadNow PRIVATE
+    DllGetClassObject PRIVATE

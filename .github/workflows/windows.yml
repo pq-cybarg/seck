@@ -1,0 +1,39 @@
+name: windows
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo check (workspace)
+        run: cargo check --workspace
+      - name: cargo build (release)
+        run: cargo build --release -p seck-cli -p seck-sandbox -p seck-host
+      - name: cargo test (workspace)
+        run: cargo test --workspace --exclude seck-escape-windows
+
+  escape:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: build escape probe
+        working-directory: tests/escape-windows
+        run: cargo build --release
+      - name: run escape tests
+        working-directory: tests/escape-windows
+        run: cargo test --release
+
+  shellext:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - name: msbuild Seck.sln
+        run: msbuild platform/windows/shellext/Seck.sln /p:Configuration=Release /p:Platform=x64
+      - name: confirm output
+        run: |
+          Test-Path 'platform/windows/shellext/x64/Release/SeckShellExt.dll'

@@ -47,6 +47,12 @@ struct AnalyzeArgs {
     /// desktop portal). The path is NEVER passed as argv — only the FD.
     #[arg(long, conflicts_with = "path")]
     fd: Option<i32>,
+    /// (Windows) Read input from a pre-opened HANDLE inherited via
+    /// `STARTUPINFOEXW` + `PROC_THREAD_ATTRIBUTE_HANDLE_LIST`. Same role
+    /// as `--fd` on Unix. The path never appears as argv.
+    #[cfg(target_os = "windows")]
+    #[arg(long, conflicts_with_all = &["path", "fd"])]
+    handle: Option<u64>,
     /// Sandbox mode. Plan 01-02 ship only mode 'a'.
     #[arg(long, default_value = "a")]
     sandbox_mode: String,
@@ -61,8 +67,21 @@ struct AnalyzeArgs {
     fips: bool,
 }
 
+#[cfg(target_os = "linux")]
+fn is_wsl2() -> bool {
+    std::fs::read_to_string("/proc/version")
+        .map(|s| s.contains("microsoft-standard") || s.contains("WSL2"))
+        .unwrap_or(false)
+}
+
+#[cfg(not(target_os = "linux"))]
+fn is_wsl2() -> bool { false }
+
 fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
+    if is_wsl2() {
+        tracing::info!("WSL2 detected; using Linux sandbox unchanged");
+    }
     let cli = Cli::parse();
     match cli.cmd {
         Cmd::Analyze(a) => analyze(a),

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MSIX Sparse Package manifest for the seck shellext. Registers
+     SeckShellExt.dll as an `IExplorerCommand` handler for files and
+     directories. The shellext launches `seck.exe analyze --handle=N`
+     via PROC_THREAD_ATTRIBUTE_HANDLE_LIST so the user file path NEVER
+     appears in argv. -->
+<Package
+    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+    xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+    xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+    xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
+    xmlns:desktop5="http://schemas.microsoft.com/appx/manifest/desktop/windows10/5"
+    IgnorableNamespaces="uap uap3 rescap com desktop4 desktop5">
+
+  <Identity
+      Name="SeckProject.SeckShellExt"
+      Publisher="CN=SeckProject"
+      Version="1.1.0.0"
+      ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>seck — Sandboxed-LLM Analyzer</DisplayName>
+    <PublisherDisplayName>seck project</PublisherDisplayName>
+    <Logo>Assets\Logo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22631.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-US" />
+  </Resources>
+
+  <Applications>
+    <Application Id="SeckShellExtApp" Executable="seck.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+          DisplayName="seck"
+          Description="Sandboxed-LLM file/project analyzer"
+          BackgroundColor="#1d1f21"
+          Square150x150Logo="Assets\Square150.png"
+          Square44x44Logo="Assets\Square44.png" />
+
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:SurrogateServer DisplayName="SeckShellExt">
+              <com:Class
+                  Id="A8B0F0C0-8A41-4F8B-B2C2-6F2C5E2C0F01"
+                  Path="SeckShellExt.dll"
+                  ThreadingModel="STA" />
+            </com:SurrogateServer>
+          </com:ComServer>
+        </com:Extension>
+
+        <desktop4:Extension Category="windows.fileExplorerContextMenus">
+          <desktop4:FileExplorerContextMenus>
+            <desktop5:ItemType Type="*">
+              <desktop5:Verb Id="SeckAnalyze" Clsid="A8B0F0C0-8A41-4F8B-B2C2-6F2C5E2C0F01" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type="Directory">
+              <desktop5:Verb Id="SeckAnalyze" Clsid="A8B0F0C0-8A41-4F8B-B2C2-6F2C5E2C0F01" />
+            </desktop5:ItemType>
+          </desktop4:FileExplorerContextMenus>
+        </desktop4:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>
