@@ -15,9 +15,14 @@ pub mod macos;
 #[cfg(target_os = "macos")]
 pub use macos::MacosSandbox;
 
-#[cfg(not(any(target_os = "linux", target_os = "macos")))]
+#[cfg(target_os = "windows")]
+pub mod windows;
+#[cfg(target_os = "windows")]
+pub use windows::WindowsSandbox;
+
+#[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
 pub mod stub;
-#[cfg(not(any(target_os = "linux", target_os = "macos")))]
+#[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
 pub use stub::LinuxSandbox;
 
 pub mod container;
@@ -36,6 +41,10 @@ pub fn bundled_profile_hash() -> [u8; 32] {
     #[cfg(target_os = "macos")]
     {
         h.update(include_bytes!("../../../platform/macos/seatbelt.sb"));
+    }
+    #[cfg(target_os = "windows")]
+    {
+        h.update(b"windows-appcontainer-v1");
     }
     h.finalize().into()
 }
@@ -58,7 +67,12 @@ pub fn apply_self_lockdown() -> Result<(), anyhow::Error> {
     MacosSandbox::apply_self_lockdown(&model_dir, &infer_bin)
 }
 
-#[cfg(not(any(target_os = "linux", target_os = "macos")))]
+#[cfg(target_os = "windows")]
+pub fn apply_self_lockdown() -> Result<(), anyhow::Error> {
+    WindowsSandbox::apply_self_lockdown()
+}
+
+#[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
 pub fn apply_self_lockdown() -> Result<(), anyhow::Error> {
     Err(anyhow::anyhow!("no sandbox backend for this platform"))
 }
@@ -73,7 +87,11 @@ pub fn default_backend() -> Box<dyn SandboxBackend> {
     {
         Box::new(MacosSandbox::new())
     }
-    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    #[cfg(target_os = "windows")]
+    {
+        Box::new(WindowsSandbox::new())
+    }
+    #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
     {
         Box::new(stub::LinuxSandbox::new())
     }
