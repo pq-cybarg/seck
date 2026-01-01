@@ -33,9 +33,7 @@ pub fn build_bundle_with_ip(
     ip: std::net::IpAddr,
 ) -> anyhow::Result<PairingBundle> {
     if !is_private_ip(&ip) {
-        anyhow::bail!(
-            "refusing to publish pairing bundle: IP {ip} is not in any private range"
-        );
+        anyhow::bail!("refusing to publish pairing bundle: IP {ip} is not in any private range");
     }
     let endpoint = format!("{ip}:{}", ep.bind_addr.port());
     let mut h = Sha3_256::new();
@@ -109,9 +107,7 @@ mod tests {
     fn refuses_public_ip() {
         assert!(build_bundle_with_ip(&ep(), "8.8.8.8".parse().unwrap()).is_err());
         assert!(build_bundle_with_ip(&ep(), "1.1.1.1".parse().unwrap()).is_err());
-        assert!(
-            build_bundle_with_ip(&ep(), "2606:4700:4700::1111".parse().unwrap()).is_err()
-        );
+        assert!(build_bundle_with_ip(&ep(), "2606:4700:4700::1111".parse().unwrap()).is_err());
     }
 
     #[test]
@@ -138,8 +134,12 @@ mod tests {
     #[test]
     fn fingerprint_changes_per_endpoint() {
         let ip: std::net::IpAddr = "10.0.0.5".parse().unwrap();
-        let a = build_bundle_with_ip(&ep(), ip).unwrap().fingerprint_sha3_256;
-        let b = build_bundle_with_ip(&ep(), ip).unwrap().fingerprint_sha3_256;
+        let a = build_bundle_with_ip(&ep(), ip)
+            .unwrap()
+            .fingerprint_sha3_256;
+        let b = build_bundle_with_ip(&ep(), ip)
+            .unwrap()
+            .fingerprint_sha3_256;
         assert_ne!(a, b);
     }
 

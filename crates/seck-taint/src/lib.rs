@@ -53,7 +53,9 @@ impl<T: Zeroize> Tainted<T> {
         let me = core::mem::ManuallyDrop::new(self);
         // SAFETY: we own `me` and never read `inner` again after this read.
         #[allow(unsafe_code)]
-        unsafe { core::ptr::read(&me.inner) }
+        unsafe {
+            core::ptr::read(&me.inner)
+        }
     }
 }
 

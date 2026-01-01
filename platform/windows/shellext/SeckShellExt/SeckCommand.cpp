@@ -6,7 +6,6 @@
 
 #include "SeckCommand.h"
 #include <shellapi.h>
-#include <wil/com.h>
 #include <string>
 
 using namespace Microsoft::WRL;
@@ -38,7 +37,10 @@ public:
         items->GetCount(&count);
 
         for (DWORD i = 0; i < count; ++i) {
-            wil::com_ptr<IShellItem> item;
+            // WRL ComPtr — no extra dep (wil is not on the stock VS 2022
+            // install path; we previously imported wil/com.h which broke
+            // the msbuild step in CI).
+            ComPtr<IShellItem> item;
             if (FAILED(items->GetItemAt(i, &item))) continue;
 
             LPWSTR path = nullptr;

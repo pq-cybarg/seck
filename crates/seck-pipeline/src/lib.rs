@@ -38,22 +38,22 @@ pub fn run(
     let analyst = analyst::run(backend, cfg, nonce, prompt_for_analyst)?;
 
     // 2. Output-schema check (retry once with tighter prompt on failure).
-    let (findings_json, surfaced_raw) = match serde_json::from_str::<serde_json::Value>(&analyst.raw)
-    {
-        Ok(v) if has_findings_array(&v) => (v, false),
-        _ => {
-            let tighter = format!(
-                "{prompt_for_analyst}\n\nIMPORTANT: Your previous response was not valid JSON \
+    let (findings_json, surfaced_raw) =
+        match serde_json::from_str::<serde_json::Value>(&analyst.raw) {
+            Ok(v) if has_findings_array(&v) => (v, false),
+            _ => {
+                let tighter = format!(
+                    "{prompt_for_analyst}\n\nIMPORTANT: Your previous response was not valid JSON \
                  matching the required schema. Output ONLY valid JSON, nothing else, with a \
                  'findings' array."
-            );
-            let retry = analyst::run(backend, cfg, nonce, &tighter)?;
-            match serde_json::from_str::<serde_json::Value>(&retry.raw) {
-                Ok(v) if has_findings_array(&v) => (v, false),
-                _ => (serde_json::json!({"raw": retry.raw}), true),
+                );
+                let retry = analyst::run(backend, cfg, nonce, &tighter)?;
+                match serde_json::from_str::<serde_json::Value>(&retry.raw) {
+                    Ok(v) if has_findings_array(&v) => (v, false),
+                    _ => (serde_json::json!({"raw": retry.raw}), true),
+                }
             }
-        }
-    };
+        };
 
     if pcfg.lenient {
         return Ok(PipelineResult {

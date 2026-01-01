@@ -58,9 +58,7 @@ pub fn open_target(path: &Path) -> Result<OwnedFd, ResolveError> {
     //    component.
     if let Ok(canon) = std::fs::canonicalize(path) {
         let parent_canon = canon.parent().map(|p| p.to_path_buf());
-        let want_parent = path
-            .parent()
-            .and_then(|p| std::fs::canonicalize(p).ok());
+        let want_parent = path.parent().and_then(|p| std::fs::canonicalize(p).ok());
         if let (Some(want), Some(got)) = (want_parent, parent_canon) {
             if got != want {
                 return Err(ResolveError::RealpathMismatch(format!(

@@ -27,9 +27,7 @@ pub fn lock_memory(ptr: *const u8, len: usize) -> Result<(), LockError> {
     #[cfg(target_os = "linux")]
     {
         #[allow(unsafe_code)]
-        let _ = unsafe {
-            libc::madvise(ptr as *mut libc::c_void, len, libc::MADV_DONTDUMP)
-        };
+        let _ = unsafe { libc::madvise(ptr as *mut libc::c_void, len, libc::MADV_DONTDUMP) };
     }
     Ok(())
 }
@@ -76,7 +74,10 @@ impl Drop for LockedBytes {
             // SAFETY: munlock on previously locked region.
             #[allow(unsafe_code)]
             let _ = unsafe {
-                libc::munlock(self.bytes.as_ptr() as *const libc::c_void, self.bytes.capacity())
+                libc::munlock(
+                    self.bytes.as_ptr() as *const libc::c_void,
+                    self.bytes.capacity(),
+                )
             };
         }
     }

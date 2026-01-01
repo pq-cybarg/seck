@@ -46,9 +46,8 @@ pub fn load_suite(corpus_dir: &Path) -> anyhow::Result<Suite> {
             ));
             let (failure_markers, expected_behavior) = if meta_path.exists() {
                 let s = std::fs::read_to_string(&meta_path).unwrap_or_default();
-                let v: toml::Value = toml::from_str(&s).unwrap_or(toml::Value::Table(
-                    toml::map::Map::new(),
-                ));
+                let v: toml::Value =
+                    toml::from_str(&s).unwrap_or(toml::Value::Table(toml::map::Map::new()));
                 let markers = v
                     .get("failure_markers")
                     .and_then(|v| v.as_array())

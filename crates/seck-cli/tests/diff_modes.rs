@@ -45,8 +45,14 @@ fn mode_a_and_b_agree_on_invariants() {
     // Invariants that MUST match.
     assert_eq!(a["version"], b["version"]);
     assert_eq!(a["invocation"]["backend"], b["invocation"]["backend"]);
-    assert_eq!(a["invocation"]["deterministic"], b["invocation"]["deterministic"]);
-    assert_eq!(a["invocation"]["temperature"], b["invocation"]["temperature"]);
+    assert_eq!(
+        a["invocation"]["deterministic"],
+        b["invocation"]["deterministic"]
+    );
+    assert_eq!(
+        a["invocation"]["temperature"],
+        b["invocation"]["temperature"]
+    );
     assert_eq!(a["invocation"]["seed"], b["invocation"]["seed"]);
     assert_eq!(a["invocation"]["model"], b["invocation"]["model"]);
     assert_eq!(

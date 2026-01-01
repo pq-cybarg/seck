@@ -18,12 +18,15 @@ fn main() -> anyhow::Result<()> {
     let canary = args
         .next()
         .ok_or_else(|| anyhow::anyhow!("missing arg: canary"))?;
-    let body = std::fs::read_to_string(&trace_path)
-        .with_context(|| format!("read {trace_path}"))?;
+    let body =
+        std::fs::read_to_string(&trace_path).with_context(|| format!("read {trace_path}"))?;
     let effs = parse_strace(&body);
     match check_trace(&effs, canary.as_bytes()) {
         Ok(()) => {
-            println!("trace-check: IO boundary holds ({} effects scanned)", effs.len());
+            println!(
+                "trace-check: IO boundary holds ({} effects scanned)",
+                effs.len()
+            );
             Ok(())
         }
         Err(e) => {

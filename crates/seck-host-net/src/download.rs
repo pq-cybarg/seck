@@ -25,11 +25,16 @@ pub fn download_verified(
     expected_sha3_256_hex: &str,
     dest: &Path,
 ) -> Result<(), DlError> {
-    if expected_sha3_256_hex.to_uppercase().contains("REPLACE_AT_RELEASE") {
+    if expected_sha3_256_hex
+        .to_uppercase()
+        .contains("REPLACE_AT_RELEASE")
+    {
         return Err(DlError::PlaceholderHash(expected_sha3_256_hex.into()));
     }
     let parsed = url::Url::parse(url).map_err(|e| DlError::Url(e.to_string()))?;
-    let host = parsed.host_str().ok_or_else(|| DlError::Url("no host".into()))?;
+    let host = parsed
+        .host_str()
+        .ok_or_else(|| DlError::Url("no host".into()))?;
     if !pin::is_allowed(host) {
         return Err(DlError::DisallowedHost(host.into()));
     }

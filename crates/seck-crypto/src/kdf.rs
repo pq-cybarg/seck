@@ -54,8 +54,13 @@ mod tests {
         // The clamped result MUST equal the result of running with the
         // floor values, not the user-supplied small ones.
         let result_safe = argon2id_safe(b"pw", b"saltsaltsaltsalt", 1, 1, 1);
-        let result_floor =
-            argon2id(b"pw", b"saltsaltsaltsalt", DEFAULT_M_KIB, DEFAULT_T, DEFAULT_P);
+        let result_floor = argon2id(
+            b"pw",
+            b"saltsaltsaltsalt",
+            DEFAULT_M_KIB,
+            DEFAULT_T,
+            DEFAULT_P,
+        );
         assert_eq!(result_safe, result_floor);
     }
 }

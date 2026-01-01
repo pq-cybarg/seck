@@ -28,6 +28,9 @@ pub async fn security_headers(req: Request, next: Next) -> Response {
     h.insert("x-frame-options", HeaderValue::from_static("DENY"));
     h.insert(X_CONTENT_TYPE_OPTIONS, HeaderValue::from_static("nosniff"));
     h.insert(REFERRER_POLICY, HeaderValue::from_static("no-referrer"));
-    h.insert(CACHE_CONTROL, HeaderValue::from_static("no-store, max-age=0"));
+    h.insert(
+        CACHE_CONTROL,
+        HeaderValue::from_static("no-store, max-age=0"),
+    );
     resp
 }

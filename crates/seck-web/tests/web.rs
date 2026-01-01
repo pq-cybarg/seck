@@ -58,7 +58,10 @@ fn rendered_html_contains_no_js() {
     let html = render(&report);
     assert!(!html.contains("<script"), "no JS in output");
     assert!(!html.contains("javascript:"), "no javascript: URLs");
-    assert!(!html.contains("on") || !html.contains("onclick"), "no inline event handlers");
+    assert!(
+        !html.contains("on") || !html.contains("onclick"),
+        "no inline event handlers"
+    );
 }
 
 #[test]
@@ -95,7 +98,10 @@ fn html_escapes_injection_attempt() {
         },
     };
     let html = render(&report);
-    assert!(!html.contains("<script>alert"), "raw injection NOT rendered");
+    assert!(
+        !html.contains("<script>alert"),
+        "raw injection NOT rendered"
+    );
     assert!(html.contains("&lt;script&gt;"), "injection HTML-escaped");
     let _ = &mut report;
 }

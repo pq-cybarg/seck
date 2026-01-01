@@ -91,13 +91,19 @@ mod tests {
 
     #[test]
     fn writes_to_fd3_ok() {
-        let effs = vec![Effect::WriteF { fd: 3, bytes: b"CANARY".to_vec() }];
+        let effs = vec![Effect::WriteF {
+            fd: 3,
+            bytes: b"CANARY".to_vec(),
+        }];
         assert!(check_trace(&effs, b"CANARY").is_ok());
     }
 
     #[test]
     fn writes_to_fd2_rejected() {
-        let effs = vec![Effect::WriteF { fd: 2, bytes: b"CANARY".to_vec() }];
+        let effs = vec![Effect::WriteF {
+            fd: 2,
+            bytes: b"CANARY".to_vec(),
+        }];
         assert!(matches!(
             check_trace(&effs, b"CANARY"),
             Err(InvariantError::UnauthorizedWrite(2))

@@ -93,7 +93,8 @@ fn real_main() -> anyhow::Result<()> {
     // The task prompt was carried on the Header but we appended files
     // first; emit a default task here. Plan 06 sources the real one
     // from the pipeline.
-    prompt.push_str("<task>\nProduce a JSON object matching the report schema. The marker nonce is ");
+    prompt
+        .push_str("<task>\nProduce a JSON object matching the report schema. The marker nonce is ");
     prompt.push_str(&nonce_hex);
     prompt.push_str(".\n</task>\n");
 
@@ -114,9 +115,12 @@ fn real_main() -> anyhow::Result<()> {
     let raw = backend.generate(&prompt).context("backend generate")?;
 
     // Build the report.
-    let parsed: serde_json::Value = serde_json::from_str(&raw)
-        .unwrap_or_else(|_| serde_json::json!({ "raw": raw }));
-    let findings = parsed.get("findings").cloned().unwrap_or(serde_json::json!([]));
+    let parsed: serde_json::Value =
+        serde_json::from_str(&raw).unwrap_or_else(|_| serde_json::json!({ "raw": raw }));
+    let findings = parsed
+        .get("findings")
+        .cloned()
+        .unwrap_or(serde_json::json!([]));
     let nonce_sha3_256_hex = {
         let mut h = seck_crypto::hash::Hasher::new();
         h.update(nonce_hex.as_bytes());

@@ -22,38 +22,27 @@
 
 use seck_plugin::SandboxBackend;
 use sha3::{Digest, Sha3_256};
-use windows_sys::Win32::Foundation::{
-    CloseHandle, GetLastError, HANDLE,
-};
+use windows_sys::Win32::Foundation::{CloseHandle, GetLastError, HANDLE};
 use windows_sys::Win32::Security::Isolation::{
     CreateAppContainerProfile, DeriveAppContainerSidFromAppContainerName,
 };
 use windows_sys::Win32::Security::{
-    CreateRestrictedToken, DISABLE_MAX_PRIVILEGE, TOKEN_DUPLICATE,
-    TOKEN_QUERY,
+    CreateRestrictedToken, DISABLE_MAX_PRIVILEGE, TOKEN_DUPLICATE, TOKEN_QUERY,
 };
 use windows_sys::Win32::System::JobObjects::{
-    AssignProcessToJobObject, CreateJobObjectW,
-    JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
-    JobObjectExtendedLimitInformation, JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
-    JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION,
-    SetInformationJobObject,
-};
-use windows_sys::Win32::System::Threading::{
-    GetCurrentProcess, OpenProcessToken,
-    PROCESS_MITIGATION_POLICY,
-    ProcessDynamicCodePolicy, ProcessExtensionPointDisablePolicy,
-    ProcessImageLoadPolicy, ProcessSignaturePolicy,
-    ProcessStrictHandleCheckPolicy, ProcessSystemCallDisablePolicy,
-    SetProcessMitigationPolicy,
+    AssignProcessToJobObject, CreateJobObjectW, JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION,
+    JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
+    JobObjectExtendedLimitInformation, SetInformationJobObject,
 };
 use windows_sys::Win32::System::SystemServices::{
-    PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY,
-    PROCESS_MITIGATION_DYNAMIC_CODE_POLICY,
-    PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY,
-    PROCESS_MITIGATION_IMAGE_LOAD_POLICY,
-    PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY,
-    PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY,
+    PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY, PROCESS_MITIGATION_DYNAMIC_CODE_POLICY,
+    PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY, PROCESS_MITIGATION_IMAGE_LOAD_POLICY,
+    PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY, PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY,
+};
+use windows_sys::Win32::System::Threading::{
+    GetCurrentProcess, OpenProcessToken, PROCESS_MITIGATION_POLICY, ProcessDynamicCodePolicy,
+    ProcessExtensionPointDisablePolicy, ProcessImageLoadPolicy, ProcessSignaturePolicy,
+    ProcessStrictHandleCheckPolicy, ProcessSystemCallDisablePolicy, SetProcessMitigationPolicy,
 };
 
 /// The application's per-install AppContainer profile name. Stable so
@@ -128,7 +117,10 @@ impl WindowsSandbox {
         // SAFETY: wide is a NUL-terminated UTF-16 buffer owned by us.
         let hr = unsafe { DeriveAppContainerSidFromAppContainerName(wide.as_ptr(), &mut sid) };
         if hr != 0 || sid.is_null() {
-            anyhow::bail!("DeriveAppContainerSidFromAppContainerName failed: HRESULT 0x{:x}", hr);
+            anyhow::bail!(
+                "DeriveAppContainerSidFromAppContainerName failed: HRESULT 0x{:x}",
+                hr
+            );
         }
         let len = unsafe { windows_sys::Win32::Security::GetLengthSid(sid as _) } as usize;
         let mut out = vec![0u8; len];
@@ -144,14 +136,11 @@ impl WindowsSandbox {
         let proc_h = unsafe { GetCurrentProcess() };
         let mut tok: HANDLE = core::ptr::null_mut();
         // SAFETY: GetCurrentProcess returns a pseudo-handle; OpenProcessToken is safe.
-        let ok = unsafe {
-            OpenProcessToken(proc_h, TOKEN_DUPLICATE | TOKEN_QUERY, &mut tok)
-        };
+        let ok = unsafe { OpenProcessToken(proc_h, TOKEN_DUPLICATE | TOKEN_QUERY, &mut tok) };
         if ok == 0 {
-            anyhow::bail!(
-                "OpenProcessToken failed: GetLastError = {}",
-                unsafe { GetLastError() }
-            );
+            anyhow::bail!("OpenProcessToken failed: GetLastError = {}", unsafe {
+                GetLastError()
+            });
         }
         let mut restricted: HANDLE = core::ptr::null_mut();
         // SAFETY: tok was obtained above; null pointers + zero counts
@@ -171,10 +160,9 @@ impl WindowsSandbox {
         };
         unsafe { CloseHandle(tok) };
         if ok == 0 {
-            anyhow::bail!(
-                "CreateRestrictedToken failed: GetLastError = {}",
-                unsafe { GetLastError() }
-            );
+            anyhow::bail!("CreateRestrictedToken failed: GetLastError = {}", unsafe {
+                GetLastError()
+            });
         }
         Ok(restricted)
     }
@@ -185,13 +173,11 @@ impl WindowsSandbox {
         // SAFETY: passing nulls is documented for an unnamed job.
         let job = unsafe { CreateJobObjectW(core::ptr::null_mut(), core::ptr::null()) };
         if job.is_null() {
-            anyhow::bail!(
-                "CreateJobObjectW failed: GetLastError = {}",
-                unsafe { GetLastError() }
-            );
+            anyhow::bail!("CreateJobObjectW failed: GetLastError = {}", unsafe {
+                GetLastError()
+            });
         }
-        let mut info: JOBOBJECT_EXTENDED_LIMIT_INFORMATION =
-            unsafe { core::mem::zeroed() };
+        let mut info: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = unsafe { core::mem::zeroed() };
         info.BasicLimitInformation.LimitFlags =
             JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
         let _ = info.BasicLimitInformation; // mark intentionally used
@@ -260,10 +246,7 @@ impl WindowsSandbox {
     }
 }
 
-fn set_policy<T>(
-    which: PROCESS_MITIGATION_POLICY,
-    value: &T,
-) -> anyhow::Result<()> {
+fn set_policy<T>(which: PROCESS_MITIGATION_POLICY, value: &T) -> anyhow::Result<()> {
     // SAFETY: pointer + length describe a packed Win32 policy struct.
     let ok = unsafe {
         SetProcessMitigationPolicy(
@@ -283,18 +266,21 @@ fn set_policy<T>(
 }
 
 impl SandboxBackend for WindowsSandbox {
-    fn name(&self) -> &'static str { "windows-appcontainer" }
-    fn profile_sha3_256(&self) -> [u8; 32] { self.profile_hash }
+    fn name(&self) -> &'static str {
+        "windows-appcontainer"
+    }
+    fn profile_sha3_256(&self) -> [u8; 32] {
+        self.profile_hash
+    }
 }
 
 /// Bind a Job HANDLE to a (newly-created, suspended) child process.
 pub fn attach_to_job(job: HANDLE, child: HANDLE) -> anyhow::Result<()> {
     let ok = unsafe { AssignProcessToJobObject(job, child) };
     if ok == 0 {
-        anyhow::bail!(
-            "AssignProcessToJobObject failed: {}",
-            unsafe { GetLastError() }
-        );
+        anyhow::bail!("AssignProcessToJobObject failed: {}", unsafe {
+            GetLastError()
+        });
     }
     Ok(())
 }

@@ -7,9 +7,9 @@
 #[cfg(unix)]
 pub mod fileset;
 #[cfg(unix)]
-pub mod walker;
-#[cfg(unix)]
 pub mod orchestrator;
+#[cfg(unix)]
+pub mod walker;
 
 #[cfg(target_os = "windows")]
 pub mod orchestrator_windows;

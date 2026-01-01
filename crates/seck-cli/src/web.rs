@@ -15,8 +15,7 @@ pub struct WebArgs {
 }
 
 pub fn run(args: WebArgs) -> anyhow::Result<()> {
-    let addr =
-        seck_web::resolve_bind(&args.bind).with_context(|| format!("bind {}", args.bind))?;
+    let addr = seck_web::resolve_bind(&args.bind).with_context(|| format!("bind {}", args.bind))?;
     let bytes = std::fs::read(&args.report).with_context(|| format!("read {:?}", args.report))?;
     let report: seck_report::schema::Report = serde_json::from_slice(&bytes)
         .with_context(|| format!("parse JSON report from {:?}", args.report))?;

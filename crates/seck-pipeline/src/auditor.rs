@@ -29,9 +29,8 @@ pub fn run(
     local.seed = seed;
     local.temperature = 0.0;
     backend.load(&local)?;
-    let prompt = format!(
-        "{AUDITOR_PROMPT}\n\n--- BEGIN REPORT ---\n{analyst_output}\n--- END REPORT ---"
-    );
+    let prompt =
+        format!("{AUDITOR_PROMPT}\n\n--- BEGIN REPORT ---\n{analyst_output}\n--- END REPORT ---");
     let raw = backend.generate(&prompt)?;
     // "Passed" = the model said NO and didn't say YES.
     let first = raw.lines().next().unwrap_or("").trim().to_uppercase();

@@ -13,7 +13,12 @@ fn write_then_verify() {
     w.append("analyze.start", f.clone()).unwrap();
     w.append("analyze.finish", f).unwrap();
     drop(w);
-    let file = std::fs::read_dir(d.path()).unwrap().next().unwrap().unwrap().path();
+    let file = std::fs::read_dir(d.path())
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap()
+        .path();
     let tip = verify_chain(&file, &pk).unwrap();
     assert_eq!(tip.len(), 64);
 }
@@ -26,7 +31,12 @@ fn tampered_record_breaks_chain() {
     w.append("test", BTreeMap::new()).unwrap();
     w.append("test2", BTreeMap::new()).unwrap();
     drop(w);
-    let file = std::fs::read_dir(d.path()).unwrap().next().unwrap().unwrap().path();
+    let file = std::fs::read_dir(d.path())
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap()
+        .path();
     let content = std::fs::read_to_string(&file).unwrap();
     // Mutate any byte in the first record's event field.
     let tampered = content.replacen("\"event\":\"test\"", "\"event\":\"tampered\"", 1);
@@ -39,7 +49,9 @@ fn empty_log_returns_genesis_tip() {
     let d = TempDir::new().unwrap();
     let (pk, _sk) = ml_dsa_keypair();
     // Create empty log file.
-    let file = d.path().join(format!("{}.jsonl", chrono::Utc::now().format("%Y-%m-%d")));
+    let file = d
+        .path()
+        .join(format!("{}.jsonl", chrono::Utc::now().format("%Y-%m-%d")));
     std::fs::write(&file, "").unwrap();
     let tip = verify_chain(&file, &pk).unwrap();
     assert_eq!(tip, "0".repeat(64));

@@ -125,7 +125,10 @@ fn real_main() -> anyhow::Result<()> {
         .collect();
     let parsed: serde_json::Value =
         serde_json::from_str(&raw).unwrap_or_else(|_| serde_json::json!({"raw": raw}));
-    let findings = parsed.get("findings").cloned().unwrap_or(serde_json::json!([]));
+    let findings = parsed
+        .get("findings")
+        .cloned()
+        .unwrap_or(serde_json::json!([]));
 
     let report = serde_json::json!({
         "version": "0.1.0",

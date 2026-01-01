@@ -4,8 +4,7 @@ use anyhow::Context;
 use clap::{Args, Subcommand};
 use std::path::PathBuf;
 
-const BUNDLED_MANIFEST: &str =
-    include_str!("../../../platform/manifests/models.manifest.toml");
+const BUNDLED_MANIFEST: &str = include_str!("../../../platform/manifests/models.manifest.toml");
 
 #[derive(Args)]
 pub struct ModelsArgs {
@@ -29,10 +28,7 @@ pub enum ModelsOp {
         airgap: bool,
     },
     /// Verify a local file's SHA3-256 against an expected hash.
-    Verify {
-        path: PathBuf,
-        sha3_256_hex: String,
-    },
+    Verify { path: PathBuf, sha3_256_hex: String },
 }
 
 pub fn run(args: ModelsArgs) -> anyhow::Result<()> {
@@ -77,10 +73,7 @@ pub fn run(args: ModelsArgs) -> anyhow::Result<()> {
             println!("OK — {} → {}", entry.name, dest.display());
             Ok(())
         }
-        ModelsOp::Verify {
-            path,
-            sha3_256_hex,
-        } => {
+        ModelsOp::Verify { path, sha3_256_hex } => {
             let bytes = std::fs::read(&path).with_context(|| format!("read {path:?}"))?;
             let got = hex::encode(seck_crypto::hash::sha3_256(&bytes));
             let want = sha3_256_hex.to_lowercase();

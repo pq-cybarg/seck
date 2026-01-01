@@ -74,8 +74,10 @@ pub fn run(args: AuditArgs) -> anyhow::Result<()> {
             std::fs::set_permissions(&sk_path, std::fs::Permissions::from_mode(0o600))?;
             std::fs::set_permissions(&pk_path, std::fs::Permissions::from_mode(0o644))?;
             println!("audit dir: {}", audit_dir.display());
-            println!("public key SHA3-256: {}",
-                hex::encode(seck_crypto::hash::sha3_256(&key.public)));
+            println!(
+                "public key SHA3-256: {}",
+                hex::encode(seck_crypto::hash::sha3_256(&key.public))
+            );
             Ok(())
         }
         AuditOp::Verify { day } => {
@@ -86,8 +88,8 @@ pub fn run(args: AuditArgs) -> anyhow::Result<()> {
             if !path.exists() {
                 anyhow::bail!("no audit log for {day} at {}", path.display());
             }
-            let tip = seck_audit::verify_chain(&path, &pk)
-                .map_err(|e| anyhow!("verify failed: {e}"))?;
+            let tip =
+                seck_audit::verify_chain(&path, &pk).map_err(|e| anyhow!("verify failed: {e}"))?;
             println!("OK — chain tip SHA3-256: {tip}");
             Ok(())
         }

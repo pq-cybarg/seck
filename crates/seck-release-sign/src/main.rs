@@ -26,6 +26,10 @@ fn main() -> anyhow::Result<()> {
     let msg = std::fs::read(&a.input).with_context(|| format!("read input {:?}", a.input))?;
     let sig = seck_crypto::sign::slh_dsa_sign(&sk, &msg);
     std::fs::write(&a.output, &sig).with_context(|| format!("write sig {:?}", a.output))?;
-    eprintln!("signed: {} bytes sig over {} bytes input", sig.len(), msg.len());
+    eprintln!(
+        "signed: {} bytes sig over {} bytes input",
+        sig.len(),
+        msg.len()
+    );
     Ok(())
 }
