@@ -1,0 +1,22 @@
+[package]
+name = "seck-escape-macos"
+edition = "2024"
+version = "0.0.0"
+publish = false
+
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+all = "deny"
+
+[[bin]]
+name = "escape_probe_macos"
+path = "src/bin/escape_probe.rs"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+seck-sandbox = { path = "../../crates/seck-sandbox" }
+libc = "0.2"
+
+[dev-dependencies]
+assert_cmd = "2"
