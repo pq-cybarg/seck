@@ -8,6 +8,3 @@ error[E0277]: the trait bound `Tainted<Vec<u8>>: AsRef<Path>` is not satisfied
   |
 note: required by a bound in `File::open`
  --> $RUST/std/src/fs.rs
-  |
-  |     pub fn open<P: AsRef<Path>>(path: P) -> io::Result<File> {
-  |                    ^^^^^^^^^^^ required by this bound in `File::open`

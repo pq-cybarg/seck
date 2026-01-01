@@ -1,5 +1,11 @@
 [workspace]
-resolver = "3"
+# Resolver 3 has a known interaction with reqwest 0.12's private
+# `__`-prefixed features under --locked + restrictive RUSTFLAGS on
+# Linux: the chained activation through `__tls` → `dep:rustls-pki-types`
+# is sometimes dropped, producing E0463 on rustls_pki_types inside
+# reqwest's own source. Resolver 2's looser unification activates the
+# whole chain reliably. We don't otherwise need resolver-3 semantics.
+resolver = "2"
 members = [
     "crates/seck-taint",
     "crates/seck-fd",
@@ -47,6 +53,11 @@ non_ascii_idents = "deny"
 
 [workspace.lints.clippy]
 all = { level = "deny", priority = -1 }
+# rustdoc treats ` + ` (and any of `+`/`-`/`*`) at a doc-comment line
+# start as a markdown bullet, even when the prose author meant "and".
+# We have lots of "foo + bar + baz" prose in our sandbox / crypto
+# docs. Allowing this lint repo-wide avoids prose-shape gymnastics.
+doc_lazy_continuation = "allow"
 
 [workspace.dependencies]
 nix = { version = "0.30", features = ["fs", "process", "user", "sched", "signal", "ioctl", "mman", "term", "socket"] }

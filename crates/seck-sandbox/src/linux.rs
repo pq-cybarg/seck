@@ -1,7 +1,7 @@
-//! Linux sandbox: clone-time namespaces (set up by the host orchestrator)
-//! + Landlock + seccomp + `PR_SET_NO_NEW_PRIVS` + `PR_SET_TSC=PR_TSC_SIGSEGV`.
-//! Called from the `seck-reader` binary right after FDs are inherited and
-//! all extra FDs are closed.
+//! Linux sandbox. Combines clone-time namespaces (set up by the host
+//! orchestrator), Landlock, seccomp, `PR_SET_NO_NEW_PRIVS`, and
+//! `PR_SET_TSC=PR_TSC_SIGSEGV`. Called from the `seck-reader` binary
+//! right after FDs are inherited and all extra FDs are closed.
 
 use seck_plugin::SandboxBackend;
 

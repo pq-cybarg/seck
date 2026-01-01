@@ -1,0 +1,6 @@
+# Pin the rustc version so committed trybuild .stderr snapshots match
+# both dev and CI exactly. Bump when rustc error messages change.
+[toolchain]
+channel = "1.95.0"
+profile = "minimal"
+components = ["clippy", "rustfmt"]

@@ -8,6 +8,3 @@ error[E0277]: the trait bound `Tainted<Vec<u8>>: AsRef<OsStr>` is not satisfied
   |
 note: required by a bound in `Command::arg`
  --> $RUST/std/src/process.rs
-  |
-  |     pub fn arg<S: AsRef<OsStr>>(&mut self, arg: S) -> &mut Command {
-  |                   ^^^^^^^^^^^^ required by this bound in `Command::arg`
